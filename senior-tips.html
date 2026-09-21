@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How Cleveland seniors are staying fed | Signal Cleveland</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-heading: "Roboto Condensed", "Arial Narrow", sans-serif;
+
+    --slate: #404f54;
+    --teal: #23685b;
+    --teal-light: #51a89a;
+    --yellow: #f4c913;
+    --red: #d64d4d;
+    --gray: #879599;
+    --cream: #f4f0e6;
+    --border: #ccd8db;
+    --paper: #fff;
+
+    /* Heading.svg canvas size (its aspect ratio is 1056:816); the subhead
+       is positioned from this so it tracks the lettering at any viewport. */
+    --heading-w: min(128svh, 183vw);
+    --heading-h: calc(var(--heading-w) * 0.7727);
+    --heading-y: 46%;   /* where the canvas center sits on the screen */
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* No page background: the screens below are transparent. */
+  html, body {
+    margin: 0;
+    color: var(--slate);
+    font-family: var(--font-body);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ---- Screen 1: hero ----
+     A normal full-height section; it scrolls away with the page. */
+  .hero {
+    position: relative;
+    height: 100vh;   /* fallback */
+    height: 100svh;
+    overflow: hidden;
+    background: var(--slate);
+  }
+
+  /* Hand lifting a grilled cut over a small charcoal grill.
+     Focal point keeps the hand + grill in frame on tall phone screens. */
+  .hero__photo {
+    position: absolute;
+    inset: 0;
+    background: url("https://signalcleveland.org/wp-content/uploads/2026/09/IMG_6725-scaled.jpg") 48% 50% / cover no-repeat;
+  }
+
+  /* Soft dark fade at the bottom so the byline and scroll cue stay legible. */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 45%);
+  }
+
+  /* Headline art: cut-out lettering centered over the hero photo.
+     Heading.svg is a 792x612 canvas with the lettering in the middle
+     (~48% of the width), so the image is sized larger than the text and
+     clipped by .hero. Width is the smaller of a height-based size
+     (desktop) and a width-based size (phones). */
+  .heading {
+    position: absolute;
+    top: var(--heading-y);
+    left: 50%;
+    z-index: 2;
+    width: var(--heading-w);
+    height: auto;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* The lettering sits in the upper ~69% of the SVG canvas (the rest is
+     empty), so the subhead hangs off that line rather than the canvas edge. */
+  .subhead {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: calc(var(--heading-y) + var(--heading-h) * 0.19 + 1.5rem);
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 90vw;
+    margin: 0;
+    text-align: center;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.25rem, 2.4vw, 1.9rem);
+    line-height: 1.2;
+    color: var(--paper);
+    text-shadow: 0 2px 12px rgba(0,0,0,.6);
+  }
+
+  .entry-meta {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: calc(5vh + 95px);
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    column-gap: 0.85rem;
+    align-items: center;
+    align-content: center;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: var(--border);
+    white-space: nowrap;
+  }
+
+  .entry-meta .avatar {
+    grid-row: 1 / span 2;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .entry-meta .byline { align-self: end; }
+  .entry-meta .posted-on { align-self: start; }
+
+  .entry-meta .author a {
+    color: var(--paper);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .entry-meta .author a:hover,
+  .entry-meta .author a:focus-visible {
+    text-decoration: underline;
+  }
+
+  /* The theme hides the "updated" timestamp when it duplicates the published
+     one; without the theme it would print the date twice. */
+  .entry-meta time.updated { display: none; }
+
+  .scroll-cue {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: 5vh;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--paper);
+    text-shadow: 0 1px 6px rgba(0,0,0,.5);
+  }
+
+  .scroll-cue::after {
+    content: "";
+    width: 2px;
+    height: 36px;
+    background: linear-gradient(var(--paper), rgba(255,255,255,0));
+  }
+
+  /* Short screens (small laptops, landscape phones): shrink the lettering so
+     the subhead still clears the byline. */
+  @media (max-height: 760px) {
+    :root {
+      --heading-w: min(112svh, 183vw);
+      --heading-y: 45%;
+    }
+  }
+
+  /* ---- Screen 2: photo left, copy right ----
+     No background of its own, so whatever is behind the page shows through. */
+  .story {
+    display: grid;
+    grid-template-columns: minmax(0, 52fr) minmax(0, 48fr);
+    min-height: 100vh;   /* fallback */
+    min-height: 100svh;
+  }
+
+  /* Kennedy and the cat sit in the right ~half of the frame, so the crop is
+     slid over to keep them in the panel. */
+  .story__photo {
+    background: url("https://signalcleveland.org/wp-content/uploads/2026/09/IMG_6896-copy-2-scaled.jpg") 69% 50% / cover no-repeat;
+  }
+
+  .story__copy {
+    align-self: center;
+    padding: 8vh 5vw 8vh 4vw;
+    font-size: clamp(18px, 1.9vw, 21px);
+    line-height: 1.75;
+  }
+
+  .story__copy p {
+    max-width: 34rem;
+    margin: 0;
+    text-wrap: pretty;   /* avoids one-word last lines where supported */
+  }
+
+  .story__copy p + p { margin-top: 1.1em; }
+
+  /* Phones and portrait tablets: photo on top, copy underneath. */
+  @media (max-width: 900px), (max-aspect-ratio: 1/1) {
+    .story {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .story__photo {
+      height: 62vh;
+      height: 62svh;
+      background-position: 88% 50%;   /* tall crop: keep Kennedy and the cat in frame */
+    }
+
+    .story__copy { padding: 2rem 1.5rem 3rem; }
+  }
+
+  /* ---- Copy screens (4: Is SNAP shrinking?, 6: Esquivel, 8: Resources) ----
+     Follows the scene in normal flow, so as Mary's tips scrolls up and away
+     this copy rises into place behind it. Transparent, like screen 2. */
+  .copy {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;   /* fallback */
+    min-height: 100svh;
+    padding: 12vh 6vw;
+  }
+
+  .copy__inner { max-width: 36rem; }
+
+  .copy h2 {
+    margin: 0 0 .6em;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    line-height: 1.1;
+  }
+
+  .copy p {
+    margin: 0;
+    font-size: clamp(18px, 1.9vw, 21px);
+    line-height: 1.75;
+    text-wrap: pretty;
+  }
+
+  .copy p + p { margin-top: 1.1em; }
+
+  /* The short answer gets a yellow marker highlight (brand accent). */
+  .copy .copy__answer {
+    margin-top: 1.6em;
+    font-weight: 600;
+  }
+
+  .copy mark {
+    background: linear-gradient(transparent 55%, var(--yellow) 55%);
+    color: inherit;
+  }
+
+  /* Resource lists: a group label, then bullets. Phone numbers are links. */
+  .copy h3 {
+    margin: 1.7em 0 .35em;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+    line-height: 1.2;
+  }
+
+  .copy h2 + h3 { margin-top: 0; }
+
+  .copy ul {
+    margin: 0;
+    padding-left: 1.25em;
+    font-size: clamp(18px, 1.9vw, 21px);
+    line-height: 1.75;
+  }
+
+  .copy li + li { margin-top: .3em; }
+
+  .copy a {
+    color: var(--teal);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .15em;
+    white-space: nowrap;   /* never break a phone number across lines */
+  }
+
+  .copy a:hover,
+  .copy a:focus-visible { text-decoration-thickness: 2px; }
+
+  /* Copy beside an image: the copy takes the larger share, so it runs a little
+     past the center line, and the image sits a short way to its right. */
+  .copy--split {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    column-gap: 2vw;
+  }
+
+  .copy--split .copy__inner { justify-self: end; }   /* text hugs the gap */
+
+  /* Tighter spacing (screen 4 onward): the screen is only as tall as its
+     content, not a full screen, so there's less empty space between screens.
+     Right after a tips scene the top padding goes, since that scene already
+     ends with its own empty margin. */
+  .copy--tight {
+    min-height: 0;
+    padding-top: 8vh;
+    padding-bottom: 8vh;
+  }
+
+  .tips-scene + .copy--tight { padding-top: 0; }
+
+  .copy--split .copy__art {
+    justify-self: start;
+    margin-left: 5vw;   /* distance from the copy; smaller = tighter */
+    width: min(100%, 17rem);
+    height: auto;
+  }
+
+  @media (max-width: 900px), (max-aspect-ratio: 1/1) {
+    .copy { padding: 3rem 1.5rem 5rem; }
+
+    .copy--tight { padding: 2.5rem 1.5rem 3rem; }
+    .tips-scene + .copy--tight { padding-top: 0; }
+
+    .copy--split {
+      grid-template-columns: 1fr;
+      row-gap: 2.5rem;
+    }
+
+    .copy--split .copy__inner { justify-self: start; }
+    .copy--split .copy__art {
+      justify-self: center;
+      margin-left: 0;
+      width: min(100%, 11rem);
+    }
+  }
+
+  /* ---- Tips screens: Mary's (3), Anna's (5), Mario's (7) ----
+     Each is an ordinary screen in the page flow; nothing is pinned. The first
+     time one is scrolled into view the script adds .is-on, and its layers come
+     in. That happens once: scrolling back up never reverses or replays it.
+     The three layers were cropped from one 792x612 design and are positioned
+     as percentages of that canvas so they line up exactly. */
+  .tips-scene {
+    --canvas-h: min(96vh, 74vw);   /* fallback */
+    --canvas-h: min(96svh, 74vw);
+    --trim: 0;   /* share of the canvas height to cut off the empty bottom edge */
+    --lift: 0;   /* share of the canvas height to pull up under the copy above */
+    position: relative;
+    margin-top: calc(var(--canvas-h) * var(--lift) * -1);
+  }
+
+  /* Anna's and Mario's sit a bit tighter to the copy above them; --lift closes
+     part of the empty margin at the top of their lettering graphics. */
+  .tips-scene--anna  { --trim: .15; --lift: .045; }
+  .tips-scene--mario { --trim: .08; --lift: .07; }
+
+  .tips-scene__stage {
+    height: calc(var(--canvas-h) * (1 - var(--trim)));
+    overflow: hidden;   /* clips the layers while they're off to the side */
+    display: grid;
+    justify-items: center;
+    align-items: start;
+  }
+
+  .tips-scene__trigger {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+
+  .tips__canvas {
+    position: relative;
+    height: var(--canvas-h);
+    aspect-ratio: 792 / 612;
+  }
+
+  .tips__layer {
+    position: absolute;
+    display: block;
+    height: auto;
+    max-width: none;
+    opacity: 0;
+  }
+
+  /* Anna and Mario: the lettering is already in place (it just scrolls up with
+     the page); the portrait slides in from the left, then the bubble grows out
+     of its tail, which points at the person. */
+  .tips-scene .tips__lettering { opacity: 1; transform: none; }
+  .tips-scene .tips__portrait  { transform: translateX(-70vw); }
+  .tips-scene .tips__bubble    { transform: scale(0); }
+
+  .tips-scene.is-on .tips__layer {
+    opacity: 1;
+    transform: none;
+    transition-property: transform, opacity;
+    transition-timing-function: cubic-bezier(.16, .84, .3, 1), linear;
+    transition-duration: .9s, 0s;
+  }
+
+  .tips-scene.is-on .tips__portrait { transition-delay: .1s, 0s; }
+
+  .tips-scene.is-on .tips__bubble {
+    transition-duration: .75s, 0s;
+    transition-timing-function: cubic-bezier(.34, 1.56, .64, 1), linear;
+    transition-delay: .95s, 0s;
+  }
+
+  /* Mary: portrait from the right, then the lettering from the left, then the
+     bubble grows out of its tail, which points at her. */
+  .tips-scene--mary .tips__lettering { opacity: 0; transform: translateX(-70vw); }
+  .tips-scene--mary .tips__portrait  { transform: translateX(60vw); }
+
+  .tips-scene--mary.is-on .tips__portrait  { transition-delay: .35s, 0s; }
+  .tips-scene--mary.is-on .tips__lettering { transition-delay: .6s, 0s; }
+  .tips-scene--mary.is-on .tips__bubble    { transition-delay: 1.4s, 0s; }
+
+  /* Already past this point when the page loads (reload mid-page): just show it. */
+  .tips-scene.no-anim .tips__layer { transition: none !important; }
+
+  /* Layer positions */
+  .mary__lettering { left: 6.566%;  top: 9.641%;  width: 56.06%; }
+  .mary__portrait  { left: 67.424%; top: 22.222%; width: 32.323%; }
+  .mary__bubble    { left: 4.798%;  top: 29.248%; width: 62.247%; transform-origin: 99.5% 15.7%; }
+
+  .anna__lettering { left: 7.449%;  top: 9.641%;  width: 52.652%; }
+  .anna__portrait  { left: 1.01%;   top: 30.392%; width: 47.222%; }
+  .anna__bubble    { left: 47.222%; top: 24.51%;  width: 47.475%; transform-origin: .5% 32.2%; }
+
+  .mario__lettering { left: 7.449%;  top: 12.255%; width: 53.157%; }
+  .mario__portrait  { left: 1.641%;  top: 32.353%; width: 37.5%; }
+  .mario__bubble    { left: 38.258%; top: 26.797%; width: 52.904%; transform-origin: .48% 32.27%; }
+
+  /* Phones and portrait tablets: lettering, portrait and bubble stack (the
+     bubble's text is too small at full-canvas scale), and the same entrance
+     plays as the screen scrolls into view. */
+  @media (max-width: 900px), (max-aspect-ratio: 1/1) {
+    .tips-scene__stage {
+      height: auto;
+      display: block;
+      padding: 9vh 6vw;
+      padding: 9svh 6vw;
+    }
+
+    .tips-scene--mary .tips-scene__stage {
+      min-height: 100vh;
+      min-height: 100svh;
+    }
+
+    .tips-scene { margin-top: 0; }
+
+    .tips-scene--anna .tips-scene__stage,
+    .tips-scene--mario .tips-scene__stage {
+      padding-top: 1rem;
+      padding-bottom: 5vh;
+      padding-bottom: 5svh;
+    }
+
+    .tips-scene__trigger { top: 40%; }
+
+    .tips-scene .tips__canvas {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.75rem;
+      height: auto;
+      aspect-ratio: auto;
+    }
+
+    .tips-scene .tips__layer { position: static; }
+    .tips-scene .tips__lettering { width: min(100%, 440px); }
+    .tips-scene .tips__bubble    { width: 100%; max-width: 520px; transform-origin: 50% 0; }
+    .mary__portrait  { width: 58%; max-width: 250px; }
+    .anna__portrait  { width: 92%; max-width: 400px; }
+    .mario__portrait { width: 78%; max-width: 330px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tips__layer { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <h1 class="visually-hidden">How Cleveland seniors are staying fed</h1>
+
+  <!-- Screen 1 -->
+  <section class="hero" aria-label="How Cleveland seniors are staying fed">
+    <div class="hero__photo"
+         role="img"
+         aria-label="A man in a yellow shirt lifts a grilled cut of meat on a fork above a small charcoal grill set on a teal picnic table, smoke rising."></div>
+
+    <img class="heading" src="Heading.svg" alt="" aria-hidden="true"
+         width="1056" height="816" fetchpriority="high" decoding="async">
+
+    <p class="subhead">Tips, stories and info to know</p>
+
+    <div class="entry-meta">
+      <img alt="A headshot of Celia Hack, health reporter for Signal Cleveland" src="https://signalcleveland.org/wp-content/uploads/2025/04/cropped-IMG_4864-scaled-1-120x120.jpg" srcset="https://signalcleveland.org/wp-content/uploads/2025/04/cropped-IMG_4864-scaled-1-240x240.jpg 2x" class="avatar avatar-120 photo" height="120" width="120">
+      <span class="byline">
+        <span>by</span>
+        <span class="author vcard"><a class="url fn n" href="https://signalcleveland.org/author/celiah/">Celia Hack</a></span>
+      </span><!-- .byline -->
+      <span class="posted-on"><time class="entry-date published" datetime="2026-09-28T00:04:00-04:00">September 28, 2026</time><time class="updated" datetime="2026-09-14T00:04:00-04:00">September 28, 2026</time></span>
+    </div><!-- .entry-meta -->
+
+    <div class="scroll-cue" aria-hidden="true">Scroll</div>
+  </section>
+
+  <!-- Screen 2 -->
+  <section class="story">
+    <div class="story__photo"
+         role="img"
+         aria-label="A woman in a gray T-shirt and black headscarf bends down toward a skinny black cat on a sidewalk outside an apartment building. Behind her, a small wagon holds paper grocery bags and a jug of water."></div>
+
+    <div class="story__copy">
+      <p>As Mary Kennedy wheeled a small cart of groceries up to her apartment building, a cat wound its way through her legs. The skinny black creature knows who feeds it.</p>
+      <p>Felines aren’t the only ones benefiting from Kennedy’s recent trip to the food bank, where she got tuna and cat food. She also picked up packs of raisins to pass out to the neighborhood kids, fruit cups for her blind neighbor who is nervous to leave the building and hot dog buns for an upcoming barbecue.</p>
+    </div>
+  </section>
+
+  <!-- Screen 3: the lettering and bubble text are images, so the words are
+       repeated here as real text for screen readers. -->
+  <section class="tips-scene tips-scene--mary" aria-labelledby="mary-title">
+    <div class="tips-scene__stage">
+      <h2 id="mary-title" class="visually-hidden">Mary’s tips</h2>
+      <ul class="visually-hidden">
+        <li>The Animal Protective League offers free cat and dog food every Tuesday, 10 am - 1 pm at the food bank’s location on Waterloo.</li>
+        <li>Don’t take RTA’s para-transit with a buggy like the one above for groceries. They don’t allow it.</li>
+        <li>Senior Transportation Connection can transport you to the grocery story or food bank. Just call 3 days ahead.</li>
+        <li>Wal-Mart has some affordable gluten-free options.</li>
+      </ul>
+
+      <div class="tips__canvas" aria-hidden="true">
+        <img class="tips__layer tips__lettering mary__lettering" src="mary-lettering.webp" alt="" width="1332" height="273">
+        <img class="tips__layer tips__portrait mary__portrait" src="mary-portrait.webp" alt="" width="768" height="1185">
+        <img class="tips__layer tips__bubble mary__bubble" src="mary-bubble.svg" alt="" width="493" height="416">
+      </div>
+    </div>
+
+    <!-- Reaching this point starts the entrance (once). -->
+    <div class="tips-scene__trigger" aria-hidden="true"></div>
+  </section>
+
+  <!-- Screen 4 -->
+  <section class="copy copy--tight">
+    <div class="copy__inner">
+      <h2>Is SNAP shrinking?</h2>
+      <p>Seniors across Cleveland are frustrated with puny SNAP benefits. Anna Washington said she only gets $26 a month — enough for a “loaf of bread and milk,” she joked. And many say they’ve noticed their allotment shrinking in recent years, despite grocery prices growing. Valeria Ray used to get $100 but now gets $24.</p>
+      <p>Experts suspect residents are seeing their benefits shrink because COVID benefits expired in 2023. Older adults also may get lower SNAP benefits if they have income from a disability check or social security.</p>
+      <p class="copy__answer">Short answer: <mark>Sort of.</mark></p>
+    </div>
+  </section>
+
+  <!-- Screen 5: the lettering and bubble text are images, so the words are
+       repeated here as real text for screen readers. -->
+  <section class="tips-scene tips-scene--anna" aria-labelledby="anna-title">
+    <div class="tips-scene__stage">
+      <h2 id="anna-title" class="visually-hidden">Anna’s tips</h2>
+      <ul class="visually-hidden">
+        <li>If your SNAP shrinks, check whether you get any benefits through your health insurance plan. Anna gets $287 through CareSource.</li>
+        <li>Try an electric can opener if it’s difficult to open one on your own.</li>
+      </ul>
+
+      <div class="tips__canvas" aria-hidden="true">
+        <img class="tips__layer tips__lettering anna__lettering" src="anna-lettering.webp" alt="" width="1251" height="249">
+        <img class="tips__layer tips__portrait anna__portrait" src="anna-portrait.webp" alt="" width="1122" height="909">
+        <img class="tips__layer tips__bubble anna__bubble" src="anna-bubble.svg" alt="" width="376" height="296">
+      </div>
+    </div>
+
+    <!-- Reaching this point starts the entrance (once). -->
+    <div class="tips-scene__trigger" aria-hidden="true"></div>
+  </section>
+
+  <!-- Screen 6 -->
+  <section class="copy copy--split copy--tight">
+    <div class="copy__inner">
+      <p>On most nights, Mario Esquivel heats up leftover “crockpot special” in his microwave — chicken he stewed alongside whatever veggies, beans and rice he has on hand. He even added papaya once, after his building got a free delivery of it.</p>
+      <p>Esquivel spent years working as a chef but was laid off after COVID. After that, he got back surgery. He can still walk, but he typically uses a rollator to get around. The crockpot is his solution.</p>
+      <p>“If I put it in a crock pot, I’m not over the stove all day,” Esquivel said.</p>
+    </div>
+
+    <img class="copy__art" src="crockpot.webp" width="780" height="667"
+         alt="A black Crock-Pot slow cooker filled with stewed chicken and vegetables.">
+  </section>
+
+  <!-- Screen 7: the lettering and bubble text are images, so the words are
+       repeated here as real text for screen readers. -->
+  <section class="tips-scene tips-scene--mario" aria-labelledby="mario-title">
+    <div class="tips-scene__stage">
+      <h2 id="mario-title" class="visually-hidden">Mario’s tips</h2>
+      <ul class="visually-hidden">
+        <li>Crockpot meals can be delicious and simpler to make, if you want to avoid standing for long periods of time.</li>
+        <li>Volunteering at local food pantries may mean you get sent home with food of your own.</li>
+        <li>Check out your health insurance plan. Some allow you to accumulate points for going to doctor’s appointments, which can be redeemed for gift cards.</li>
+      </ul>
+
+      <div class="tips__canvas" aria-hidden="true">
+        <img class="tips__layer tips__lettering mario__lettering" src="mario-lettering.webp" alt="" width="1263" height="234">
+        <img class="tips__layer tips__portrait mario__portrait" src="mario-portrait.webp" alt="" width="891" height="909">
+        <img class="tips__layer tips__bubble mario__bubble" src="mario-bubble.svg" alt="" width="419" height="331">
+      </div>
+    </div>
+
+    <!-- Reaching this point starts the entrance (once). -->
+    <div class="tips-scene__trigger" aria-hidden="true"></div>
+  </section>
+
+  <!-- Screen 8 -->
+  <section class="copy copy--tight">
+    <div class="copy__inner">
+      <h2>Resources to know:</h2>
+
+      <h3>Senior Transportation Connection</h3>
+      <ul>
+        <li>Call <a href="tel:+12166642833">216.664.2833</a> to sign up</li>
+        <li>$1.25 per ride in Cleveland</li>
+      </ul>
+
+      <h3>Greater Cleveland Food Bank</h3>
+      <ul>
+        <li>Call <a href="tel:+12167382067">216.738.2067</a></li>
+        <li>Can help you find nearby free food options and apply for SNAP.</li>
+      </ul>
+
+      <h3>Looking for home-delivered meals?</h3>
+      <ul>
+        <li>Western Reserve Area Agency on Aging: <a href="tel:+18006267277">800-626-7277</a> or <a href="tel:+12166210303">216-621-0303</a></li>
+        <li>Benjamin Rose Institute on Aging: <a href="tel:+12163731994">(216) 373-1994</a></li>
+        <li>Cuyahoga County’s options program: <a href="tel:+12164206700">(216) 420-6700</a></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<noscript>
+  <style>
+    .tips__layer { opacity: 1 !important; transform: none !important; }
+  </style>
+</noscript>
+
+<script>
+  /* Each tips screen has a hidden trigger point. The first time it comes into
+     view, the screen gets .is-on and its entrance plays. It is never removed,
+     so scrolling back up doesn't reverse or replay anything. Screens already
+     above the fold when the page loads (a reload mid-page) skip the animation
+     and just appear. */
+  (function () {
+    var pending = Array.prototype.slice.call(document.querySelectorAll(".tips-scene"))
+      .map(function (scene) {
+        return { scene: scene, trigger: scene.querySelector(".tips-scene__trigger") };
+      })
+      .filter(function (item) { return item.trigger; });
+
+    var queued = false;
+
+    function update(instant) {
+      queued = false;
+      var viewportHeight = window.innerHeight;
+
+      pending = pending.filter(function (item) {
+        if (item.trigger.getBoundingClientRect().top >= viewportHeight) return true;
+        if (instant) item.scene.classList.add("no-anim");
+        item.scene.classList.add("is-on");
+        return false;
+      });
+
+      if (!pending.length) {
+        window.removeEventListener("scroll", queue);
+        window.removeEventListener("resize", queue);
+        window.removeEventListener("load", queue);
+      }
+    }
+
+    function queue() {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(function () { update(false); });
+      }
+    }
+
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    window.addEventListener("load", queue);
+    update(true);
+  })();
+</script>
+
+</body>
+</html>
