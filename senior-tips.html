@@ -94,6 +94,7 @@
     transform: translate(-50%, -50%);
     pointer-events: none;
     user-select: none;
+    filter: drop-shadow(0 3px 10px rgba(0,0,0,.35));
   }
 
   /* The lettering sits in the upper ~69% of the SVG canvas (the rest is
@@ -239,7 +240,7 @@
       background-position: 88% 50%;   /* tall crop: keep Kennedy and the cat in frame */
     }
 
-    .story__copy { padding: 2rem 1.5rem 3rem; }
+    .story__copy { padding: 2rem 1.5rem 1.25rem; }
   }
 
   /* ---- Copy screens (4: Is SNAP shrinking?, 6: Esquivel, 8: Resources) ----
@@ -337,8 +338,8 @@
 
   .copy--split .copy__art {
     justify-self: start;
-    margin-left: 5vw;   /* distance from the copy; smaller = tighter */
-    width: min(100%, 17rem);
+    margin-left: 2.5vw;   /* distance from the copy; smaller = tighter */
+    width: min(100%, 29.75rem);   /* 75% larger than the original 17rem */
     height: auto;
   }
 
@@ -348,16 +349,19 @@
     .copy--tight { padding: 2.5rem 1.5rem 3rem; }
     .tips-scene + .copy--tight { padding-top: 0; }
 
-    .copy--split {
-      grid-template-columns: 1fr;
-      row-gap: 2.5rem;
-    }
+    .copy--split { grid-template-columns: 1fr; }
 
-    .copy--split .copy__inner { justify-self: start; }
+    /* The image sits between the first and second paragraphs: the copy
+       wrapper steps aside so its paragraphs share the grid with the image,
+       and order pulls the image up after the first one. */
+    .copy--split .copy__inner { display: contents; }
+    .copy--split .copy__inner > * { justify-self: start; max-width: 36rem; }
+    .copy--split .copy__inner > :first-child { order: -1; }
     .copy--split .copy__art {
+      order: -1;
       justify-self: center;
-      margin-left: 0;
-      width: min(100%, 11rem);
+      margin: .75rem 0 0;
+      width: min(100%, 19.25rem);   /* 75% larger than the original 11rem */
     }
   }
 
@@ -404,108 +408,97 @@
     aspect-ratio: 792 / 612;
   }
 
+  /* Lettering and portrait: plain static images, always visible, no transition. */
   .tips__layer {
     position: absolute;
     display: block;
     height: auto;
     max-width: none;
-    opacity: 0;
   }
 
-  /* Anna and Mario: the lettering is already in place (it just scrolls up with
-     the page); the portrait slides in from the left, then the bubble grows out
-     of its tail, which points at the person. */
-  .tips-scene .tips__lettering { opacity: 1; transform: none; }
-  .tips-scene .tips__portrait  { transform: translateX(-70vw); }
-  .tips-scene .tips__bubble    { transform: scale(0); }
-
-  .tips-scene.is-on .tips__layer {
-    opacity: 1;
-    transform: none;
+  /* The bubble (art + its text, baked into one image, as it was originally)
+     is the only layer that animates: it grows out of its tail on scroll. */
+  .tips__bubble {
+    opacity: 0;
+    transform: scale(0);
     transition-property: transform, opacity;
     transition-timing-function: cubic-bezier(.16, .84, .3, 1), linear;
-    transition-duration: .9s, 0s;
+    transition-duration: 0s, 0s;   /* no motion until .is-on (below) sets real durations */
   }
 
-  .tips-scene.is-on .tips__portrait { transition-delay: .1s, 0s; }
-
+  /* Scrolled into view: the bubble pops open. */
   .tips-scene.is-on .tips__bubble {
-    transition-duration: .75s, 0s;
+    opacity: 1;
+    transform: none;
+    transition-duration: .55s, 0s;
     transition-timing-function: cubic-bezier(.34, 1.56, .64, 1), linear;
-    transition-delay: .95s, 0s;
+    transition-delay: .15s, 0s;
   }
-
-  /* Mary: portrait from the right, then the lettering from the left, then the
-     bubble grows out of its tail, which points at her. */
-  .tips-scene--mary .tips__lettering { opacity: 0; transform: translateX(-70vw); }
-  .tips-scene--mary .tips__portrait  { transform: translateX(60vw); }
-
-  .tips-scene--mary.is-on .tips__portrait  { transition-delay: .35s, 0s; }
-  .tips-scene--mary.is-on .tips__lettering { transition-delay: .6s, 0s; }
-  .tips-scene--mary.is-on .tips__bubble    { transition-delay: 1.4s, 0s; }
 
   /* Already past this point when the page loads (reload mid-page): just show it. */
-  .tips-scene.no-anim .tips__layer { transition: none !important; }
+  .tips-scene.no-anim .tips__bubble { transition: none !important; }
 
-  /* Layer positions */
+  /* Layer positions, as percentages of the 792x612 design canvas. */
   .mary__lettering { left: 6.566%;  top: 9.641%;  width: 56.06%; }
-  .mary__portrait  { left: 67.424%; top: 22.222%; width: 32.323%; }
+  .mary__portrait  { left: 63.5%;   top: 22.222%; width: 36%; }
   .mary__bubble    { left: 4.798%;  top: 29.248%; width: 62.247%; transform-origin: 99.5% 15.7%; }
 
   .anna__lettering { left: 7.449%;  top: 9.641%;  width: 52.652%; }
-  .anna__portrait  { left: 1.01%;   top: 30.392%; width: 47.222%; }
+  .anna__portrait  { left: 1.01%;   top: 28.9%;   width: 50%; }
   .anna__bubble    { left: 47.222%; top: 24.51%;  width: 47.475%; transform-origin: .5% 32.2%; }
 
   .mario__lettering { left: 7.449%;  top: 12.255%; width: 53.157%; }
-  .mario__portrait  { left: 1.641%;  top: 32.353%; width: 37.5%; }
+  .mario__portrait  { left: -13%;    top: 23%;      width: 54%; }
   .mario__bubble    { left: 38.258%; top: 26.797%; width: 52.904%; transform-origin: .48% 32.27%; }
 
-  /* Phones and portrait tablets: lettering, portrait and bubble stack (the
-     bubble's text is too small at full-canvas scale), and the same entrance
-     plays as the screen scrolls into view. */
+  /* Phones and portrait tablets: each screen follows its own 375x667 mobile
+     design ("Photo Transparency Grid Edit" SVGs): lettering across the top,
+     the mobile bubble under it, the portrait below. Same images as desktop
+     except the bubble, which swaps to its narrower *-bubble-mobile.svg via
+     <picture>. Positions are percentages of that 375x667 frame. */
   @media (max-width: 900px), (max-aspect-ratio: 1/1) {
+    .tips-scene { margin-top: 0; }
+
     .tips-scene__stage {
       height: auto;
       display: block;
-      padding: 9vh 6vw;
-      padding: 9svh 6vw;
+      padding: 1rem 0 5vh;
+      padding: 1rem 0 5svh;
     }
 
-    .tips-scene--mary .tips-scene__stage {
-      min-height: 100vh;
-      min-height: 100svh;
-    }
-
-    .tips-scene { margin-top: 0; }
-
-    .tips-scene--anna .tips-scene__stage,
-    .tips-scene--mario .tips-scene__stage {
-      padding-top: 1rem;
-      padding-bottom: 5vh;
-      padding-bottom: 5svh;
-    }
+    .tips-scene--mary .tips-scene__stage { padding: 1.5rem 0 3rem; }
+    .tips-scene--anna .tips-scene__stage { padding-top: 0; }
 
     .tips-scene__trigger { top: 40%; }
 
     .tips-scene .tips__canvas {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.75rem;
+      width: min(100%, 480px);
       height: auto;
-      aspect-ratio: auto;
+      aspect-ratio: 375 / 667;
+      margin: 0 auto;
     }
 
-    .tips-scene .tips__layer { position: static; }
-    .tips-scene .tips__lettering { width: min(100%, 440px); }
-    .tips-scene .tips__bubble    { width: 100%; max-width: 520px; transform-origin: 50% 0; }
-    .mary__portrait  { width: 58%; max-width: 250px; }
-    .anna__portrait  { width: 92%; max-width: 400px; }
-    .mario__portrait { width: 78%; max-width: 330px; }
+    /* Mary's frame runs taller (375x735) so her tilted portrait isn't
+       clipped at the bottom; her tops are percentages of that height. The
+       portrait sits in front of the bubble. */
+    .tips-scene--mary .tips__canvas { aspect-ratio: 375 / 735; }
+
+    .mary__lettering { left: .21%;   top: 1.77%;  width: 99.92%; }
+    .mary__bubble    { left: -.93%;  top: 11.02%; width: 101.6%;  transform-origin: 72.4% 97.9%; }
+    .mary__portrait  { left: 64.21%; top: 58.9%;  width: 51.07%; z-index: 1;
+                       transform: rotate(14.66deg); transform-origin: 0 0; }
+
+    .anna__lettering { left: -.48%;  top: 6.24%;  width: 100.64%; }
+    .anna__bubble    { left: 4.8%;   top: 17.17%; width: 92.27%;  transform-origin: 32.5% 98.1%; }
+    .anna__portrait  { left: -8.93%; top: 62.98%; width: 87.49%; }
+
+    .mario__lettering { left: -.48%;  top: -.33%;  width: 100.72%; }
+    .mario__bubble    { left: -3.6%;  top: 8.1%;   width: 109.33%; transform-origin: 30.3% 98.6%; }
+    .mario__portrait  { left: -1.52%; top: 65.44%; width: 61.71%; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .tips__layer { transition: none !important; }
+    .tips__bubble { transition: none !important; }
   }
 </style>
 </head>
@@ -563,8 +556,11 @@
 
       <div class="tips__canvas" aria-hidden="true">
         <img class="tips__layer tips__lettering mary__lettering" src="mary-lettering.webp" alt="" width="1332" height="273">
-        <img class="tips__layer tips__portrait mary__portrait" src="mary-portrait.webp" alt="" width="768" height="1185">
-        <img class="tips__layer tips__bubble mary__bubble" src="mary-bubble.svg" alt="" width="493" height="416">
+        <img class="tips__layer tips__portrait mary__portrait" src="mary.png" alt="" width="1406" height="2022">
+        <picture>
+          <source media="(max-width: 900px), (max-aspect-ratio: 1/1)" srcset="mary-bubble-mobile.svg" width="381" height="410">
+          <img class="tips__layer tips__bubble mary__bubble" src="mary-bubble.svg" alt="" width="493" height="416">
+        </picture>
       </div>
     </div>
 
@@ -587,6 +583,7 @@
   <section class="tips-scene tips-scene--anna" aria-labelledby="anna-title">
     <div class="tips-scene__stage">
       <h2 id="anna-title" class="visually-hidden">Anna’s tips</h2>
+
       <ul class="visually-hidden">
         <li>If your SNAP shrinks, check whether you get any benefits through your health insurance plan. Anna gets $287 through CareSource.</li>
         <li>Try an electric can opener if it’s difficult to open one on your own.</li>
@@ -594,8 +591,11 @@
 
       <div class="tips__canvas" aria-hidden="true">
         <img class="tips__layer tips__lettering anna__lettering" src="anna-lettering.webp" alt="" width="1251" height="249">
-        <img class="tips__layer tips__portrait anna__portrait" src="anna-portrait.webp" alt="" width="1122" height="909">
-        <img class="tips__layer tips__bubble anna__bubble" src="anna-bubble.svg" alt="" width="376" height="296">
+        <img class="tips__layer tips__portrait anna__portrait" src="anna.png" alt="" width="1999" height="1576">
+        <picture>
+          <source media="(max-width: 900px), (max-aspect-ratio: 1/1)" srcset="anna-bubble-mobile.svg" width="346" height="318">
+          <img class="tips__layer tips__bubble anna__bubble" src="anna-bubble.svg" alt="" width="376" height="296">
+        </picture>
       </div>
     </div>
 
@@ -611,7 +611,7 @@
       <p>“If I put it in a crock pot, I’m not over the stove all day,” Esquivel said.</p>
     </div>
 
-    <img class="copy__art" src="crockpot.webp" width="780" height="667"
+    <img class="copy__art" src="crockpot.png" width="1861" height="1480"
          alt="A black Crock-Pot slow cooker filled with stewed chicken and vegetables.">
   </section>
 
@@ -620,6 +620,7 @@
   <section class="tips-scene tips-scene--mario" aria-labelledby="mario-title">
     <div class="tips-scene__stage">
       <h2 id="mario-title" class="visually-hidden">Mario’s tips</h2>
+
       <ul class="visually-hidden">
         <li>Crockpot meals can be delicious and simpler to make, if you want to avoid standing for long periods of time.</li>
         <li>Volunteering at local food pantries may mean you get sent home with food of your own.</li>
@@ -628,8 +629,11 @@
 
       <div class="tips__canvas" aria-hidden="true">
         <img class="tips__layer tips__lettering mario__lettering" src="mario-lettering.webp" alt="" width="1263" height="234">
-        <img class="tips__layer tips__portrait mario__portrait" src="mario-portrait.webp" alt="" width="891" height="909">
-        <img class="tips__layer tips__bubble mario__bubble" src="mario-bubble.svg" alt="" width="419" height="331">
+        <img class="tips__layer tips__portrait mario__portrait" src="mario.png" alt="" width="1520" height="1565">
+        <picture>
+          <source media="(max-width: 900px), (max-aspect-ratio: 1/1)" srcset="mario-bubble-mobile.svg" width="410" height="417">
+          <img class="tips__layer tips__bubble mario__bubble" src="mario-bubble.svg" alt="" width="419" height="331">
+        </picture>
       </div>
     </div>
 
