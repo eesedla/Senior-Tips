@@ -197,55 +197,9 @@
     }
   }
 
-  /* ---- Screen 2: photo left, copy right ----
-     No background of its own, so whatever is behind the page shows through. */
-  .story {
-    display: grid;
-    grid-template-columns: minmax(0, 52fr) minmax(0, 48fr);
-    min-height: 100vh;   /* fallback */
-    min-height: 100svh;
-  }
-
-  /* Kennedy and the cat sit in the right ~half of the frame, so the crop is
-     slid over to keep them in the panel. */
-  .story__photo {
-    background: url("https://signalcleveland.org/wp-content/uploads/2026/09/IMG_6896-copy-2-scaled.jpg") 69% 50% / cover no-repeat;
-  }
-
-  .story__copy {
-    align-self: center;
-    padding: 8vh 5vw 8vh 4vw;
-    font-size: clamp(18px, 1.9vw, 21px);
-    line-height: 1.75;
-  }
-
-  .story__copy p {
-    max-width: 34rem;
-    margin: 0;
-    text-wrap: pretty;   /* avoids one-word last lines where supported */
-  }
-
-  .story__copy p + p { margin-top: 1.1em; }
-
-  /* Phones and portrait tablets: photo on top, copy underneath. */
-  @media (max-width: 900px), (max-aspect-ratio: 1/1) {
-    .story {
-      grid-template-columns: 1fr;
-      min-height: 0;
-    }
-
-    .story__photo {
-      height: 62vh;
-      height: 62svh;
-      background-position: 88% 50%;   /* tall crop: keep Kennedy and the cat in frame */
-    }
-
-    .story__copy { padding: 2rem 1.5rem 1.25rem; }
-  }
-
-  /* ---- Copy screens (4: Is SNAP shrinking?, 6: Esquivel, 8: Resources) ----
-     Follows the scene in normal flow, so as Mary's tips scrolls up and away
-     this copy rises into place behind it. Transparent, like screen 2. */
+  /* ---- Copy screens (2: Intro, 4: Is SNAP shrinking?, 6: Esquivel,
+     8: Resources) ----
+     Plain text screens in normal flow, centered, no background. */
   .copy {
     display: grid;
     place-items: center;
@@ -531,14 +485,12 @@
   </section>
 
   <!-- Screen 2 -->
-  <section class="story">
-    <div class="story__photo"
-         role="img"
-         aria-label="A woman in a gray T-shirt and black headscarf bends down toward a skinny black cat on a sidewalk outside an apartment building. Behind her, a small wagon holds paper grocery bags and a jug of water."></div>
-
-    <div class="story__copy">
-      <p>As Mary Kennedy wheeled a small cart of groceries up to her apartment building, a cat wound its way through her legs. The skinny black creature knows who feeds it.</p>
-      <p>Felines aren’t the only ones benefiting from Kennedy’s recent trip to the food bank, where she got tuna and cat food. She also picked up packs of raisins to pass out to the neighborhood kids, fruit cups for her blind neighbor who is nervous to leave the building and hot dog buns for an upcoming barbecue.</p>
+  <section class="copy">
+    <div class="copy__inner">
+      <p>For Cleveland seniors, high grocery prices are only part of the struggle to eat well. Many live on fixed incomes that don’t stretch as far as they once did. Others have trouble getting to the store or cooking as they lose mobility.</p>
+      <p>Over the past three months, I spoke with more than a dozen seniors about these challenges. Many were frustrated with SNAP. Some ages 55 to 64 are losing benefits because of new work requirements. Others receive only a small monthly benefit, especially since pandemic-era increases have ended. <a href="#">Read more here.</a></p>
+      <p>But I also heard plenty of hard-earned wisdom. Seniors shared their tips for shopping, cooking and eating well — or simply eating enough — as food costs rise and getting around becomes harder.</p>
+      <p>Here’s their advice, along with resources they recommended.</p>
     </div>
   </section>
 
