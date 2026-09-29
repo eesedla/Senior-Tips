@@ -7,7 +7,9 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+
+<script>document.documentElement.classList.add("js");</script>
 
 <style>
   :root {
@@ -24,11 +26,16 @@
     --border: #ccd8db;
     --paper: #fff;
 
-    /* Heading.svg canvas size (its aspect ratio is 1056:816); the subhead
-       is positioned from this so it tracks the lettering at any viewport. */
-    --heading-w: min(128svh, 183vw);
-    --heading-h: calc(var(--heading-w) * 0.7727);
-    --heading-y: 46%;   /* where the canvas center sits on the screen */
+    /* Heading.svg is 392.88 x 373.5 with the lettering filling the canvas.
+       Its height is the smaller of a screen-height share (desktop) and a
+       width-based size (phones). The heading + subhead block is centered in
+       the space above the byline; the subhead is placed from these numbers
+       so it tracks the lettering at any viewport. */
+    --heading-h: min(57vh, 86vw * .9507);   /* fallback */
+    --heading-h: min(57svh, 86vw * .9507);
+    --heading-w: calc(var(--heading-h) * 1.0519);
+    --heading-top: max(3vh, (100vh - 5vh - 170px - var(--heading-h) - 5rem) / 2);
+    --heading-top: max(3svh, (100svh - 5svh - 170px - var(--heading-h) - 5rem) / 2);
   }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -70,40 +77,37 @@
     background: url("https://signalcleveland.org/wp-content/uploads/2026/09/IMG_6725-scaled.jpg") 48% 50% / cover no-repeat;
   }
 
-  /* Soft dark fade at the bottom so the byline and scroll cue stay legible. */
+  /* Shadow mask: dims the whole photo so the cut-out lettering pops, a
+     little deeper at the bottom behind the byline and scroll cue. */
   .hero::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 45%);
+    background:
+      linear-gradient(to top, rgba(0,0,0,.35) 0%, rgba(0,0,0,0) 40%),
+      rgba(0, 0, 0, .52);
   }
 
-  /* Headline art: cut-out lettering centered over the hero photo.
-     Heading.svg is a 792x612 canvas with the lettering in the middle
-     (~48% of the width), so the image is sized larger than the text and
-     clipped by .hero. Width is the smaller of a height-based size
-     (desktop) and a width-based size (phones). */
+  /* Headline art: cut-out lettering over the hero photo. */
   .heading {
     position: absolute;
-    top: var(--heading-y);
+    top: var(--heading-top);
     left: 50%;
     z-index: 2;
     width: var(--heading-w);
     height: auto;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     pointer-events: none;
     user-select: none;
-    filter: drop-shadow(0 3px 10px rgba(0,0,0,.35));
+    filter: drop-shadow(0 4px 14px rgba(0,0,0,.5));
   }
 
-  /* The lettering sits in the upper ~69% of the SVG canvas (the rest is
-     empty), so the subhead hangs off that line rather than the canvas edge. */
   .subhead {
     position: absolute;
     z-index: 2;
     left: 50%;
-    top: calc(var(--heading-y) + var(--heading-h) * 0.19 + 1.5rem);
+    top: calc(var(--heading-top) + var(--heading-h) + 1.25rem);
     transform: translateX(-50%);
     width: max-content;
     max-width: 90vw;
@@ -111,10 +115,11 @@
     text-align: center;
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: clamp(1.25rem, 2.4vw, 1.9rem);
+    font-size: clamp(1.6rem, 3.1vw, 2.6rem);
     line-height: 1.2;
     color: var(--paper);
-    text-shadow: 0 2px 12px rgba(0,0,0,.6);
+    /* Tight drop shadow for edge definition, plus a wide soft glow. */
+    text-shadow: 0 2px 4px rgba(0,0,0,.6), 0 0 20px rgba(0,0,0,.75);
   }
 
   .entry-meta {
@@ -134,6 +139,7 @@
     line-height: 1.35;
     color: var(--border);
     white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0,0,0,.7), 0 0 14px rgba(0,0,0,.7);
   }
 
   .entry-meta .avatar {
@@ -143,6 +149,7 @@
     border-radius: 50%;
     object-fit: cover;
     display: block;
+    box-shadow: 0 2px 10px rgba(0,0,0,.5);
   }
 
   .entry-meta .byline { align-self: end; }
@@ -188,17 +195,8 @@
     background: linear-gradient(var(--paper), rgba(255,255,255,0));
   }
 
-  /* Short screens (small laptops, landscape phones): shrink the lettering so
-     the subhead still clears the byline. */
-  @media (max-height: 760px) {
-    :root {
-      --heading-w: min(112svh, 183vw);
-      --heading-y: 45%;
-    }
-  }
-
   /* ---- Copy screens (2: Intro, 4: Is SNAP shrinking?, 6: Esquivel,
-     8: Resources) ----
+     12: Resources) ----
      Plain text screens in normal flow, centered, no background. */
   .copy {
     display: grid;
@@ -258,6 +256,29 @@
 
   .copy li + li { margin-top: .3em; }
 
+  /* Organization names within a resource group. */
+  .copy h4 {
+    margin: 1.3em 0 .3em;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.1rem, 1.9vw, 1.25rem);
+    line-height: 1.25;
+    color: var(--teal);
+  }
+
+  .copy h3 + h4 { margin-top: .2em; }
+
+  .copy ul + h4 { margin-top: 1.3em; }
+
+  /* Drop-off addresses: stacked blocks, no bullets. */
+  .copy .copy__addresses {
+    margin-top: .8em;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .copy .copy__addresses li + li { margin-top: .8em; }
+
   .copy a {
     color: var(--teal);
     text-decoration: underline;
@@ -288,7 +309,7 @@
     padding-bottom: 8vh;
   }
 
-  .tips-scene + .copy--tight { padding-top: 0; }
+  .tips + .copy--tight { padding-top: 0; }
 
   .copy--split .copy__art {
     justify-self: start;
@@ -301,7 +322,7 @@
     .copy { padding: 3rem 1.5rem 5rem; }
 
     .copy--tight { padding: 2.5rem 1.5rem 3rem; }
-    .tips-scene + .copy--tight { padding-top: 0; }
+    .tips + .copy--tight { padding-top: 0; }
 
     .copy--split { grid-template-columns: 1fr; }
 
@@ -319,140 +340,486 @@
     }
   }
 
-  /* ---- Tips screens: Mary's (3), Anna's (5), Mario's (7) ----
-     Each is an ordinary screen in the page flow; nothing is pinned. The first
-     time one is scrolled into view the script adds .is-on, and its layers come
-     in. That happens once: scrolling back up never reverses or replays it.
-     The three layers were cropped from one 792x612 design and are positioned
-     as percentages of that canvas so they line up exactly. */
-  .tips-scene {
-    --canvas-h: min(96vh, 74vw);   /* fallback */
-    --canvas-h: min(96svh, 74vw);
-    --trim: 0;   /* share of the canvas height to cut off the empty bottom edge */
-    --lift: 0;   /* share of the canvas height to pull up under the copy above */
-    position: relative;
-    margin-top: calc(var(--canvas-h) * var(--lift) * -1);
+  /* ---- Screen 2 + table of contents ----
+     Desktop: the intro copy on the left, the contents panel taking over the
+     right half. Phones: the contents panel under the intro. */
+  html { scroll-behavior: smooth; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
   }
 
-  /* Anna's and Mario's sit a bit tighter to the copy above them; --lift closes
-     part of the empty margin at the top of their lettering graphics. */
-  .tips-scene--anna  { --trim: .15; --lift: .045; }
-  .tips-scene--mario { --trim: .08; --lift: .07; }
-
-  .tips-scene__stage {
-    height: calc(var(--canvas-h) * (1 - var(--trim)));
-    overflow: hidden;   /* clips the layers while they're off to the side */
+  .intro {
     display: grid;
-    justify-items: center;
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
-  .tips-scene__trigger {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 1px;
-    height: 1px;
-    pointer-events: none;
+  .toc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(2rem, 6vh, 3.5rem);
+    padding: 10vh 5vw;
+    background: var(--cream);
   }
 
-  .tips__canvas {
+  .toc__heading {
+    margin: 0 0 1rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(1.6rem, 2.6vw, 2.25rem);
+    line-height: 1.1;
+  }
+
+  /* Sticker collage, laid out from the mockup screenshot. Each <li> is the
+     visible sticker (so hover and tap hit the sticker, not its transparent
+     padding); the image inside is offset to line its sticker up with it. */
+  .toc__people {
     position: relative;
-    height: var(--canvas-h);
-    aspect-ratio: 792 / 612;
+    aspect-ratio: 1058 / 602;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  /* Lettering and portrait: plain static images, always visible, no transition. */
-  .tips__layer {
+  .toc__person {
     position: absolute;
-    display: block;
-    height: auto;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    aspect-ratio: var(--ar);
+  }
+
+  .toc__person a {
+    position: absolute;
+    inset: 0;
+    border-radius: 30%;
+  }
+
+  .toc__person img {
+    position: absolute;
+    left: var(--img-x);
+    top: var(--img-y);
+    width: var(--img-w);
     max-width: none;
+    height: auto;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,.15));
+    transition: transform .2s ease, filter .2s ease;
   }
 
-  /* The bubble (art + its text, baked into one image, as it was originally)
-     is the only layer that animates: it grows out of its tail on scroll. */
-  .tips__bubble {
-    opacity: 0;
-    transform: scale(0);
-    transition-property: transform, opacity;
-    transition-timing-function: cubic-bezier(.16, .84, .3, 1), linear;
-    transition-duration: 0s, 0s;   /* no motion until .is-on (below) sets real durations */
+  /* Lifted off the page on hover / keyboard focus. */
+  .toc__person a:hover img,
+  .toc__person a:focus-visible img {
+    transform: translateY(-6px) scale(1.04);
+    filter: drop-shadow(0 16px 18px rgba(0,0,0,.35));
   }
 
-  /* Scrolled into view: the bubble pops open. */
-  .tips-scene.is-on .tips__bubble {
-    opacity: 1;
-    transform: none;
-    transition-duration: .55s, 0s;
-    transition-timing-function: cubic-bezier(.34, 1.56, .64, 1), linear;
-    transition-delay: .15s, 0s;
+  .toc__person a:hover,
+  .toc__person a:focus-visible { z-index: 1; }
+
+  .toc__person a:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 6px;
   }
 
-  /* Already past this point when the page loads (reload mid-page): just show it. */
-  .tips-scene.no-anim .tips__bubble { transition: none !important; }
+  .toc__resources {
+    margin: 0;
+    padding-left: 1.25em;
+    font-size: clamp(18px, 1.9vw, 21px);
+    line-height: 1.75;
+  }
 
-  /* Layer positions, as percentages of the 792x612 design canvas. */
-  .mary__lettering { left: 6.566%;  top: 9.641%;  width: 56.06%; }
-  .mary__portrait  { left: 63.5%;   top: 22.222%; width: 36%; }
-  .mary__bubble    { left: 4.798%;  top: 29.248%; width: 62.247%; transform-origin: 99.5% 15.7%; }
+  .toc__resources a {
+    color: var(--teal);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .15em;
+  }
 
-  .anna__lettering { left: 7.449%;  top: 9.641%;  width: 52.652%; }
-  .anna__portrait  { left: 1.01%;   top: 28.9%;   width: 50%; }
-  .anna__bubble    { left: 47.222%; top: 24.51%;  width: 47.475%; transform-origin: .5% 32.2%; }
+  .toc__resources a:hover,
+  .toc__resources a:focus-visible { text-decoration-thickness: 2px; }
 
-  .mario__lettering { left: 7.449%;  top: 12.255%; width: 53.157%; }
-  .mario__portrait  { left: -13%;    top: 23%;      width: 54%; }
-  .mario__bubble    { left: 38.258%; top: 26.797%; width: 52.904%; transform-origin: .48% 32.27%; }
-
-  /* Phones and portrait tablets: each screen follows its own 375x667 mobile
-     design ("Photo Transparency Grid Edit" SVGs): lettering across the top,
-     the mobile bubble under it, the portrait below. Same images as desktop
-     except the bubble, which swaps to its narrower *-bubble-mobile.svg via
-     <picture>. Positions are percentages of that 375x667 frame. */
   @media (max-width: 900px), (max-aspect-ratio: 1/1) {
-    .tips-scene { margin-top: 0; }
+    .intro { grid-template-columns: minmax(0, 1fr); }
 
-    .tips-scene__stage {
-      height: auto;
-      display: block;
-      padding: 1rem 0 5vh;
-      padding: 1rem 0 5svh;
-    }
+    .toc { padding: 2.5rem 1.5rem 3rem; }
 
-    .tips-scene--mary .tips-scene__stage { padding: 1.5rem 0 3rem; }
-    .tips-scene--anna .tips-scene__stage { padding-top: 0; }
-
-    .tips-scene__trigger { top: 40%; }
-
-    .tips-scene .tips__canvas {
-      width: min(100%, 480px);
-      height: auto;
-      aspect-ratio: 375 / 667;
-      margin: 0 auto;
-    }
-
-    /* Mary's frame runs taller (375x735) so her tilted portrait isn't
-       clipped at the bottom; her tops are percentages of that height. The
-       portrait sits in front of the bubble. */
-    .tips-scene--mary .tips__canvas { aspect-ratio: 375 / 735; }
-
-    .mary__lettering { left: .21%;   top: 1.77%;  width: 99.92%; }
-    .mary__bubble    { left: -.93%;  top: 11.02%; width: 101.6%;  transform-origin: 72.4% 97.9%; }
-    .mary__portrait  { left: 64.21%; top: 58.9%;  width: 51.07%; z-index: 1;
-                       transform: rotate(14.66deg); transform-origin: 0 0; }
-
-    .anna__lettering { left: -.48%;  top: 6.24%;  width: 100.64%; }
-    .anna__bubble    { left: 4.8%;   top: 17.17%; width: 92.27%;  transform-origin: 32.5% 98.1%; }
-    .anna__portrait  { left: -8.93%; top: 62.98%; width: 87.49%; }
-
-    .mario__lettering { left: -.48%;  top: -.33%;  width: 100.72%; }
-    .mario__bubble    { left: -3.6%;  top: 8.1%;   width: 109.33%; transform-origin: 30.3% 98.6%; }
-    .mario__portrait  { left: -1.52%; top: 65.44%; width: 61.71%; }
+    /* Use most of the side margins so the faces stay a comfortable size. */
+    .toc__people { margin: 1rem -1rem 0; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .tips__bubble { transition: none !important; }
+    .toc__person img { transition: none; }
+  }
+
+  /* ---- Tips screens: Mary (3), Anna (5), Mario (7), Patricia (8),
+     Michael (9), Brenda (10), Leonard (11) ----
+     Label art (an image, with its words as alt text), a cutout, and a speech
+     bubble whose tips are real HTML text, so they grow with browser zoom and
+     larger default font sizes.
+
+     Base layout (no script, or too tall to pin): an ordinary screen with
+     every tip listed in the bubble.
+     .is-scrolly (added by the script when there's more than one tip and the
+     screen fits in the viewport): the section runs taller than the screen,
+     the stage sticks, and scrolling fades the bubble from one tip to the
+     next while the big counter beside the label ticks along ("1/5"). The
+     bubble pops out of its tail once, the first time it's seen. */
+  .tips {
+    --step: 70vh;   /* scroll distance per tip while pinned */
+    --step: 70svh;
+    position: relative;
+  }
+
+  .tips__stage { padding: 8vh 6vw; }
+
+  .tips__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "header header"
+      "bubble cutout";
+    column-gap: clamp(1rem, 3vw, 3rem);
+    row-gap: clamp(1rem, 2.5vh, 2rem);
+    align-items: center;
+    max-width: 78rem;
+    margin: 0 auto;
+  }
+
+  /* Cutout on the left, bubble (tail pointing left) on the right. */
+  .tips--left .tips__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    grid-template-areas:
+      "header header"
+      "cutout bubble";
+  }
+
+  .tips.is-scrolly { height: calc(100vh + (var(--n) - .5) * var(--step)); }
+  .tips.is-scrolly { height: calc(100svh + (var(--n) - .5) * var(--step)); }
+
+  .tips.is-scrolly .tips__stage {
+    position: sticky;
+    top: 0;
+    display: grid;
+    align-content: center;
+    height: 100vh;
+    height: 100svh;
+    padding-block: 1.5rem;
+  }
+
+  /* Label art on the left, the tip counter on the right. */
+  .tips__header {
+    grid-area: header;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .tips__label {
+    min-width: 0;
+    margin: 0;
+    line-height: 0;
+  }
+
+  /* Counter, with previous/next arrows when there's more than one tip. */
+  .tips__nav {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: .3em;
+    margin: 0 4% 0 0;
+    font-size: clamp(2rem, 1rem + 3.2vw, 4.5rem);
+    color: #111;
+  }
+
+  .tips__count {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tips__arrow {
+    display: grid;
+    place-items: center;
+    width: max(2.75rem, .85em);   /* never smaller than a comfortable tap target */
+    height: max(2.75rem, .85em);
+    padding: 0;
+    font: inherit;
+    border: 3px solid currentColor;
+    border-radius: 50%;
+    background: var(--paper);
+    color: inherit;
+    cursor: pointer;
+    transition: background-color .15s, color .15s, opacity .15s;
+  }
+
+  .tips__arrow svg { width: 55%; height: 55%; }
+
+  .tips__arrow:hover:not(:disabled) {
+    background: #111;
+    color: var(--paper);
+  }
+
+  .tips__arrow:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 3px;
+  }
+
+  .tips__arrow:disabled {
+    opacity: .2;
+    cursor: default;
+  }
+
+  /* Desktop: the header shares the columns below it, so the counter sits
+     over the right-hand column like in the mockup. */
+  @supports (grid-template-columns: subgrid) {
+    .tips__header {
+      display: grid;
+      grid-template-columns: subgrid;
+    }
+
+    .tips__nav {
+      grid-column: 2;
+      justify-self: center;
+      margin: 0;
+    }
+  }
+
+  /* Listed all at once (not pinned), a running count and arrows don't apply. */
+  .tips:not(.is-scrolly):not(.tips--single) .tips__nav { display: none; }
+
+  /* Every label is drawn at the same scale (the source images share one:
+     their "tips" lettering matches), so the letters come out the same size
+     from person to person. --lw is each image's pixel width; the scale is
+     capped so the widest label (Michael's, 807px) still fits. On desktop a
+     label may run a little past its column, into the empty space left of
+     the counter. A soft shadow lifts the paper cutouts off the page. */
+  .tips__label img {
+    --label-scale: min(.95px, 50vw / 807);
+    display: block;
+    width: calc(var(--lw) * var(--label-scale));
+    height: auto;
+    max-width: none;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .22));
+  }
+
+  .tips__cutout {
+    grid-area: cutout;
+    justify-self: start;
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 66vh;
+    max-height: 66svh;
+  }
+
+  .tips--left .tips__cutout { justify-self: end; }
+
+  /* ---- The speech bubble ----
+     The hand-drawn outline PNG is 9-sliced with border-image: its corners
+     (tail included) keep their shape and the straight edges stretch, so the
+     bubble grows with whatever text is in it. Sizes are in em, so the art
+     scales with the text. Per person: --t/--r/--b/--l are the slice lines in
+     image pixels, --tail-y is the tail's height in image pixels. */
+  .bubble {
+    --k: .025em;   /* 1 image pixel */
+    grid-area: bubble;
+    justify-self: end;
+    position: relative;
+    width: min(100%, 18em);
+    min-height: calc((var(--t) + var(--b)) * var(--k) + .5em);
+    padding: 1.6em 2.4em 1.6em 1.8em;   /* the tail side (right) gets more */
+    border: .1em solid transparent;
+    border-image-source: var(--art);
+    border-image-slice: var(--t) var(--r) var(--b) var(--l);
+    border-image-width:
+      calc(var(--t) * var(--k)) calc(var(--r) * var(--k))
+      calc(var(--b) * var(--k)) calc(var(--l) * var(--k));
+    border-image-repeat: stretch;
+    font-size: clamp(1.15rem, .8rem + 1.35vw, 2.4rem);
+    line-height: 1.4;
+    text-align: center;
+    color: #111;
+    transform-origin: 100% calc(var(--tail-y) * var(--k));
+  }
+
+  .tips--left .bubble {
+    justify-self: start;
+    padding: 1.6em 1.8em 1.6em 2.4em;
+    transform-origin: 0 calc(var(--tail-y) * var(--k));
+  }
+
+  .bubble__tips {
+    display: grid;
+    row-gap: 1.6em;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .bubble__tip {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bubble__tip p {
+    margin: auto 0;
+    text-wrap: pretty;
+  }
+
+  .bubble__tip a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .15em;
+  }
+
+  /* Pinned: every tip shares one cell, so the bubble is sized to the longest
+     and doesn't jump as they change; only the active one shows. */
+  .tips.is-scrolly .bubble__tip {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transition: opacity .45s ease;
+  }
+
+  .tips.is-scrolly .bubble__tip.is-active { opacity: 1; }
+
+  /* Pop-out entrance (only when the script runs). */
+  .js .tips .bubble {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  .js .tips.is-on .bubble {
+    opacity: 1;
+    transform: none;
+    transition: transform .55s cubic-bezier(.34, 1.56, .64, 1) .15s, opacity 0s .15s;
+  }
+
+  .js .tips.no-anim .bubble { transition: none; }
+
+  /* Per-person art: label, slice lines and tail height for each bubble PNG. */
+  .tips--mary     .bubble { --art: url("mary%20bubble.png");     --t: 175; --r: 150; --b: 130; --l: 150; --tail-y: 125; }
+  .tips--anna     .bubble { --art: url("anna%20bubble.png");     --t: 225; --r: 150; --b: 130; --l: 150; --tail-y: 180; }
+  .tips--mario    .bubble { --art: url("mario%20bubble.png");    --t: 240; --r: 150; --b: 140; --l: 150; --tail-y: 200; }
+  .tips--patricia .bubble { --art: url("patricia%20bubble.png"); --t: 180; --r: 170; --b: 130; --l: 150; --tail-y: 125; }
+  .tips--michael  .bubble { --art: url("michael%20bubble.png");  --t: 270; --r: 160; --b: 150; --l: 160; --tail-y: 225; --k: .023em; }
+  .tips--brenda   .bubble { --art: url("brenda%20bubble.png");   --t: 160; --r: 150; --b: 120; --l: 150; --tail-y: 100; }
+  .tips--leonard  .bubble { --art: url("leonard%20bubble.png");  --t: 250; --r: 150; --b: 140; --l: 150; --tail-y: 200; }
+
+  /* Michael's outline sits farther in from the edges of its image. */
+  .tips--michael .bubble { padding: 2em 2.2em 1.8em 2.9em; }
+
+  /* Mary's cutout is tall and narrow; keep it from towering over her bubble. */
+  .tips--mary .tips__cutout { max-height: 62vh; max-height: 62svh; }
+
+  /* Phones and portrait tablets (follows "anna example.svg"): label across
+     the top, the bubble nearly full width under it with its tail pointing
+     down, then the cutout at the bottom, off to the tail's side and running
+     to the screen edge, with the counter and arrows beside it.
+     Mary, Patricia and Brenda use "right bubble.png" (tail bottom right,
+     cutout on the right); everyone else uses "left bubble.png". */
+  @media (max-width: 900px), (max-aspect-ratio: 1/1) {
+    .tips__stage { padding: 2rem 1.5rem 2.5rem; }
+
+    .tips__inner,
+    .tips--left .tips__inner {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        "header header"
+        "bubble bubble"
+        "cutout nav";
+      column-gap: 1rem;
+      row-gap: 1rem;
+      max-width: 30rem;
+    }
+
+    .tips:not(.tips--left) .tips__inner {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas:
+        "header header"
+        "bubble bubble"
+        "nav    cutout";
+    }
+
+    /* The header steps aside so the label and the counter can sit in
+       different rows of the grid. */
+    .tips__header { display: contents; }
+    .tips__label { grid-area: header; justify-self: start; margin-left: -.9rem; }
+    .tips__label img { --label-scale: min(.95px, (100vw - 1.2rem) / 807, 32rem / 807); }
+
+    /* Counter on top, arrows under it. */
+    .tips__nav,
+    .tips--single .tips__nav {
+      grid-area: nav;
+      display: grid;
+      grid-template-columns: auto auto;
+      justify-content: center;
+      justify-items: center;
+      gap: .6rem .75rem;
+      margin: 0;
+      font-size: clamp(2.5rem, 1rem + 7vw, 3.5rem);
+    }
+
+    .tips__count { grid-column: 1 / -1; grid-row: 1; }
+
+    .tips__arrow { width: 2.75rem; height: 2.75rem; }
+
+    .tips__cutout,
+    .tips--mary .tips__cutout {
+      justify-self: end;
+      align-self: end;
+      max-width: calc(100% + 1.5rem);
+      max-height: 34vh;
+      max-height: 34svh;
+      margin-right: -1.5rem;   /* runs to the screen edge */
+    }
+
+    .tips--left .tips__cutout {
+      justify-self: start;
+      margin: 0 0 0 -1.5rem;
+    }
+
+    /* Bubble: tail along the bottom edge, kept inside a corner slice so it
+       never stretches. --tail-x is where the tail sits, in image pixels. */
+    .bubble,
+    .tips--left .bubble,
+    .tips--michael .bubble {
+      --art: url("left%20bubble.png");
+      --t: 95; --r: 90; --b: 75; --l: 150;
+      --k: .034em;
+      justify-self: stretch;
+      width: auto;
+      padding: 1.5em 1.3em 1.8em;
+      font-size: clamp(1.3rem, .55rem + 4.4vw, 2rem);
+      line-height: 1.35;
+      transform-origin: calc(130 * var(--k)) 100%;
+    }
+
+    @media (max-height: 740px) {
+      .tips__stage { padding-block: 1.25rem; }
+      .tips__inner, .tips--left .tips__inner { row-gap: .6rem; }
+      .tips__cutout, .tips--mary .tips__cutout { max-height: 25vh; max-height: 25svh; }
+      .bubble, .tips--left .bubble, .tips--michael .bubble { font-size: clamp(1.2rem, .5rem + 3.9vw, 2rem); }
+    }
+
+    .tips:not(.tips--left) .bubble {
+      --art: url("right%20bubble.png");
+      --t: 95; --r: 135; --b: 80; --l: 90;
+      padding: 1.4em 1.3em 1.9em;
+      transform-origin: calc(100% - 106 * var(--k)) 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js .tips .bubble,
+    .tips.is-scrolly .bubble__tip { transition: none !important; }
   }
 </style>
 </head>
@@ -468,9 +835,9 @@
          aria-label="A man in a yellow shirt lifts a grilled cut of meat on a fork above a small charcoal grill set on a teal picnic table, smoke rising."></div>
 
     <img class="heading" src="Heading.svg" alt="" aria-hidden="true"
-         width="1056" height="816" fetchpriority="high" decoding="async">
+         width="524" height="498" fetchpriority="high" decoding="async">
 
-    <p class="subhead">Tips, stories and info to know</p>
+    <p class="subhead">Tips and resources by seniors, for seniors</p>
 
     <div class="entry-meta">
       <img alt="A headshot of Celia Hack, health reporter for Signal Cleveland" src="https://signalcleveland.org/wp-content/uploads/2025/04/cropped-IMG_4864-scaled-1-120x120.jpg" srcset="https://signalcleveland.org/wp-content/uploads/2025/04/cropped-IMG_4864-scaled-1-240x240.jpg 2x" class="avatar avatar-120 photo" height="120" width="120">
@@ -484,181 +851,405 @@
     <div class="scroll-cue" aria-hidden="true">Scroll</div>
   </section>
 
-  <!-- Screen 2 -->
-  <section class="copy">
-    <div class="copy__inner">
-      <p>For Cleveland seniors, high grocery prices are only part of the struggle to eat well. Many live on fixed incomes that don’t stretch as far as they once did. Others have trouble getting to the store or cooking as they lose mobility.</p>
-      <p>Over the past three months, I spoke with more than a dozen seniors about these challenges. Many were frustrated with SNAP. Some ages 55 to 64 are losing benefits because of new work requirements. Others receive only a small monthly benefit, especially since pandemic-era increases have ended. <a href="#">Read more here.</a></p>
-      <p>But I also heard plenty of hard-earned wisdom. Seniors shared their tips for shopping, cooking and eating well — or simply eating enough — as food costs rise and getting around becomes harder.</p>
-      <p>Here’s their advice, along with resources they recommended.</p>
-    </div>
-  </section>
+  <!-- Screen 2 with the table of contents: side by side on desktop, the
+       contents under the intro on phones. -->
+  <div class="intro">
+    <section class="copy intro__copy">
+      <div class="copy__inner">
+        <p>For Cleveland seniors, high grocery prices are only part of the struggle to eat well. Many live on fixed incomes that don’t stretch as far as they once did. Others have trouble getting to the store or cooking as they lose mobility.</p>
+        <p>Over the past three months, I spoke with more than a dozen seniors about these challenges. Many were frustrated with SNAP. Some ages 55 to 64 are losing benefits because of new work requirements. Others receive only a small monthly benefit, especially since pandemic-era increases have ended. <a href="#">Read more here.</a></p>
+        <p>But I also heard plenty of hard-earned wisdom. Seniors shared their tips for shopping, cooking and eating well — or simply eating enough — as food costs rise and getting around becomes harder.</p>
+        <p>Here’s their advice, along with resources they recommended.</p>
+      </div>
+    </section>
 
-  <!-- Screen 3: the lettering and bubble text are images, so the words are
-       repeated here as real text for screen readers. -->
-  <section class="tips-scene tips-scene--mary" aria-labelledby="mary-title">
-    <div class="tips-scene__stage">
-      <h2 id="mary-title" class="visually-hidden">Mary’s tips</h2>
-      <ul class="visually-hidden">
-        <li>The Animal Protective League offers free cat and dog food every Tuesday, 10 am - 1 pm at the food bank’s location on Waterloo.</li>
-        <li>Don’t take RTA’s para-transit with a buggy like the one above for groceries. They don’t allow it.</li>
-        <li>Senior Transportation Connection can transport you to the grocery story or food bank. Just call 3 days ahead.</li>
-        <li>Wal-Mart has some affordable gluten-free options.</li>
-      </ul>
+    <nav class="toc" aria-labelledby="toc-title">
+      <h2 id="toc-title" class="visually-hidden">In this story</h2>
 
-      <div class="tips__canvas" aria-hidden="true">
-        <img class="tips__layer tips__lettering mary__lettering" src="mary-lettering.webp" alt="" width="1332" height="273">
-        <img class="tips__layer tips__portrait mary__portrait" src="mary.png" alt="" width="1406" height="2022">
-        <picture>
-          <source media="(max-width: 900px), (max-aspect-ratio: 1/1)" srcset="mary-bubble-mobile.svg" width="381" height="410">
-          <img class="tips__layer tips__bubble mary__bubble" src="mary-bubble.svg" alt="" width="493" height="416">
-        </picture>
+      <div class="toc__group">
+        <h3 class="toc__heading">Tips from seniors</h3>
+        <!-- Stickers are placed as a collage (positions are percentages of
+             the collage box); list order follows the story. -->
+        <ul class="toc__people">
+          <li class="toc__person" style="--x: 66.64%; --y: 4.98%; --w: 18.24%; --ar: 458 / 605; --img-w: 146.29%; --img-x: -22.27%; --img-y: -10.58%">
+            <a href="#mary"><img src="mary%20toc.png" alt="Mary’s tips" width="670" height="732" decoding="async"></a>
+          </li>
+          <li class="toc__person" style="--x: 78.45%; --y: 59.8%; --w: 21.55%; --ar: 537 / 570; --img-w: 104.84%; --img-x: -2.42%; --img-y: -2.28%">
+            <a href="#anna"><img src="anna%20toc.png" alt="Anna’s tips" width="563" height="617" decoding="async"></a>
+          </li>
+          <li class="toc__person" style="--x: 0.0%; --y: 42.03%; --w: 19.66%; --ar: 496 / 592; --img-w: 104.64%; --img-x: -3.63%; --img-y: -5.24%">
+            <a href="#mario"><img src="mario%20toc.png" alt="Mario’s tips" width="519" height="629" decoding="async"></a>
+          </li>
+          <li class="toc__person" style="--x: 11.53%; --y: 0.0%; --w: 14.46%; --ar: 370 / 458; --img-w: 161.62%; --img-x: -30.81%; --img-y: -16.59%">
+            <a href="#patricia"><img src="patricia%20toc.png" alt="Patricia’s tips" width="598" height="679" decoding="async"></a>
+          </li>
+          <li class="toc__person" style="--x: 50.38%; --y: 52.82%; --w: 20.04%; --ar: 498 / 609; --img-w: 134.94%; --img-x: -15.06%; --img-y: -2.13%">
+            <a href="#michael"><img src="michael%20toc.png" alt="Michael’s tips" width="672" height="688" decoding="async"></a>
+          </li>
+          <li class="toc__person" style="--x: 33.74%; --y: 4.15%; --w: 22.5%; --ar: 566 / 600; --img-w: 105.12%; --img-x: -0.71%; --img-y: -2.83%">
+            <a href="#brenda"><img src="brenda%20toc.png" alt="Brenda’s tips" width="595" height="664" decoding="async"></a>
+          </li>
+          <li class="toc__person" style="--x: 21.36%; --y: 62.62%; --w: 20.42%; --ar: 512 / 530; --img-w: 167.38%; --img-x: -26.76%; --img-y: -24.53%">
+            <a href="#leonard"><img src="leo%20toc.png" alt="Leonard’s tips" width="857" height="820" decoding="async"></a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="toc__group">
+        <h3 class="toc__heading">Helpful resources</h3>
+        <ul class="toc__resources">
+          <li><a href="#food">Food</a></li>
+          <li><a href="#snap">Assistance with SNAP</a></li>
+          <li><a href="#meals">Home-delivered meals</a></li>
+          <li><a href="#transportation">Transportation</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Screen 3 -->
+  <section id="mary" class="tips tips--mary" style="--n: 5" aria-labelledby="mary-title">
+    <div class="tips__stage">
+      <div class="tips__inner">
+        <div class="tips__header">
+          <h2 id="mary-title" class="tips__label"><img src="mary%20label.png" alt="Mary’s tips" width="653" height="130" style="--lw: 653"></h2>
+          <div class="tips__nav">
+            <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <p class="tips__count" aria-hidden="true">1/5</p>
+            <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+        <img class="tips__cutout" src="mary.png" alt="Mary, talking on a cellphone." width="1406" height="2022" decoding="async">
+        <div class="bubble">
+          <ol class="bubble__tips">
+          <li class="bubble__tip is-active">
+            <p>The Greater Cleveland Food Bank’s Waterloo location has good meat options, and good portion sizes.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>The Animal Protective League gives away free cat and dog food every Tuesday at the food bank’s Waterloo location.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>Don’t take RTA’s Paratransit with a buggy that has grocery bags inside it. They don’t allow it.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>Senior Transportation Connection can take you to the grocery store or food bank. Just call 3 days ahead.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>Wal-Mart has some affordable gluten-free options.</p>
+          </li>
+          </ol>
+        </div>
       </div>
     </div>
-
-    <!-- Reaching this point starts the entrance (once). -->
-    <div class="tips-scene__trigger" aria-hidden="true"></div>
   </section>
 
-  <!-- Screen 4 -->
-  <section class="copy copy--tight">
-    <div class="copy__inner">
-      <h2>Is SNAP shrinking?</h2>
-      <p>Seniors across Cleveland are frustrated with puny SNAP benefits. Anna Washington said she only gets $26 a month — enough for a “loaf of bread and milk,” she joked. And many say they’ve noticed their allotment shrinking in recent years, despite grocery prices growing. Valeria Ray used to get $100 but now gets $24.</p>
-      <p>Experts suspect residents are seeing their benefits shrink because COVID benefits expired in 2023. Older adults also may get lower SNAP benefits if they have income from a disability check or social security.</p>
-      <p class="copy__answer">Short answer: <mark>Sort of.</mark></p>
-    </div>
-  </section>
 
-  <!-- Screen 5: the lettering and bubble text are images, so the words are
-       repeated here as real text for screen readers. -->
-  <section class="tips-scene tips-scene--anna" aria-labelledby="anna-title">
-    <div class="tips-scene__stage">
-      <h2 id="anna-title" class="visually-hidden">Anna’s tips</h2>
 
-      <ul class="visually-hidden">
-        <li>If your SNAP shrinks, check whether you get any benefits through your health insurance plan. Anna gets $287 through CareSource.</li>
-        <li>Try an electric can opener if it’s difficult to open one on your own.</li>
-      </ul>
-
-      <div class="tips__canvas" aria-hidden="true">
-        <img class="tips__layer tips__lettering anna__lettering" src="anna-lettering.webp" alt="" width="1251" height="249">
-        <img class="tips__layer tips__portrait anna__portrait" src="anna.png" alt="" width="1999" height="1576">
-        <picture>
-          <source media="(max-width: 900px), (max-aspect-ratio: 1/1)" srcset="anna-bubble-mobile.svg" width="346" height="318">
-          <img class="tips__layer tips__bubble anna__bubble" src="anna-bubble.svg" alt="" width="376" height="296">
-        </picture>
+  <!-- Screen 5 -->
+  <section id="anna" class="tips tips--anna tips--left" style="--n: 2" aria-labelledby="anna-title">
+    <div class="tips__stage">
+      <div class="tips__inner">
+        <div class="tips__header">
+          <h2 id="anna-title" class="tips__label"><img src="anna%20label.png" alt="Anna’s tips" width="614" height="118" style="--lw: 614"></h2>
+          <div class="tips__nav">
+            <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <p class="tips__count" aria-hidden="true">1/2</p>
+            <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+        <img class="tips__cutout" src="anna.png" alt="Anna, seated at a table with a bottle of water." width="1999" height="1576" decoding="async">
+        <div class="bubble">
+          <ol class="bubble__tips">
+          <li class="bubble__tip is-active">
+            <p>Check whether you can get an “over-the-counter” card through your health insurance plan that can pay for groceries.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>Try an electric can opener if opening cans is getting more difficult as you age.</p>
+          </li>
+          </ol>
+        </div>
       </div>
     </div>
-
-    <!-- Reaching this point starts the entrance (once). -->
-    <div class="tips-scene__trigger" aria-hidden="true"></div>
   </section>
 
-  <!-- Screen 6 -->
-  <section class="copy copy--split copy--tight">
-    <div class="copy__inner">
-      <p>On most nights, Mario Esquivel heats up leftover “crockpot special” in his microwave — chicken he stewed alongside whatever veggies, beans and rice he has on hand. He even added papaya once, after his building got a free delivery of it.</p>
-      <p>Esquivel spent years working as a chef but was laid off after COVID. After that, he got back surgery. He can still walk, but he typically uses a rollator to get around. The crockpot is his solution.</p>
-      <p>“If I put it in a crock pot, I’m not over the stove all day,” Esquivel said.</p>
-    </div>
-
-    <img class="copy__art" src="crockpot.png" width="1861" height="1480"
-         alt="A black Crock-Pot slow cooker filled with stewed chicken and vegetables.">
-  </section>
-
-  <!-- Screen 7: the lettering and bubble text are images, so the words are
-       repeated here as real text for screen readers. -->
-  <section class="tips-scene tips-scene--mario" aria-labelledby="mario-title">
-    <div class="tips-scene__stage">
-      <h2 id="mario-title" class="visually-hidden">Mario’s tips</h2>
-
-      <ul class="visually-hidden">
-        <li>Crockpot meals can be delicious and simpler to make, if you want to avoid standing for long periods of time.</li>
-        <li>Volunteering at local food pantries may mean you get sent home with food of your own.</li>
-        <li>Check out your health insurance plan. Some allow you to accumulate points for going to doctor’s appointments, which can be redeemed for gift cards.</li>
-      </ul>
-
-      <div class="tips__canvas" aria-hidden="true">
-        <img class="tips__layer tips__lettering mario__lettering" src="mario-lettering.webp" alt="" width="1263" height="234">
-        <img class="tips__layer tips__portrait mario__portrait" src="mario.png" alt="" width="1520" height="1565">
-        <picture>
-          <source media="(max-width: 900px), (max-aspect-ratio: 1/1)" srcset="mario-bubble-mobile.svg" width="410" height="417">
-          <img class="tips__layer tips__bubble mario__bubble" src="mario-bubble.svg" alt="" width="419" height="331">
-        </picture>
+  <!-- Screen 7 -->
+  <section id="mario" class="tips tips--mario tips--left" style="--n: 3" aria-labelledby="mario-title">
+    <div class="tips__stage">
+      <div class="tips__inner">
+        <div class="tips__header">
+          <h2 id="mario-title" class="tips__label"><img src="mario%20label.png" alt="Mario’s tips" width="674" height="114" style="--lw: 674"></h2>
+          <div class="tips__nav">
+            <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <p class="tips__count" aria-hidden="true">1/3</p>
+            <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+        <img class="tips__cutout" src="mario.png" alt="Mario, seated in a patio chair, pointing to himself." width="1520" height="1565" decoding="async">
+        <div class="bubble">
+          <ol class="bubble__tips">
+          <li class="bubble__tip is-active">
+            <p>Crockpot meals can be delicious and simple to make, especially if you want to avoid standing for long periods of time.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>Volunteering at local food pantries may mean you get sent home with extras.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>Check if your health insurance plan allows you to earn points for going to doctor’s appointments that can be redeemed for gift cards or rewards.</p>
+          </li>
+          </ol>
+        </div>
       </div>
     </div>
-
-    <!-- Reaching this point starts the entrance (once). -->
-    <div class="tips-scene__trigger" aria-hidden="true"></div>
   </section>
 
   <!-- Screen 8 -->
+  <section id="patricia" class="tips tips--patricia" style="--n: 2" aria-labelledby="patricia-title">
+    <div class="tips__stage">
+      <div class="tips__inner">
+        <div class="tips__header">
+          <h2 id="patricia-title" class="tips__label"><img src="patricia%20label.png" alt="Patricia’s tips" width="793" height="136" style="--lw: 793"></h2>
+          <div class="tips__nav">
+            <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <p class="tips__count" aria-hidden="true">1/2</p>
+            <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+        <img class="tips__cutout" src="patricia%20cutout.png" alt="Patricia, smiling, holding a bag of groceries and a red tumbler." width="1350" height="1288" decoding="async">
+        <div class="bubble">
+          <ol class="bubble__tips">
+          <li class="bubble__tip is-active">
+            <p>Instacart is a service that will deliver groceries to your home. For people who use SNAP, it offers a <a href="#">half-price membership at $4.99 a month for one year</a>.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>Sign up for a monthly free senior box through the Greater Cleveland Food Bank. The food is mostly canned goods and other non-perishables. It often includes proteins like beans.</p>
+          </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screen 9 -->
+  <section id="michael" class="tips tips--michael tips--left tips--single" style="--n: 1" aria-labelledby="michael-title">
+    <div class="tips__stage">
+      <div class="tips__inner">
+        <div class="tips__header">
+          <h2 id="michael-title" class="tips__label"><img src="michael%20label.png" alt="Michael’s tips" width="807" height="130" style="--lw: 807"></h2>
+          <div class="tips__nav">
+            <p class="tips__count" aria-hidden="true">1/1</p>
+          </div>
+        </div>
+        <img class="tips__cutout" src="michael%20cutout.png" alt="Michael, seated outdoors in a red polo shirt." width="1530" height="1889" decoding="async">
+        <div class="bubble">
+          <ol class="bubble__tips">
+          <li class="bubble__tip is-active">
+            <p>Check out home-delivered meal programs through community centers and nonprofits. The meals Michael receives, through St. Martin de Porres family center, are free and nutritious.</p>
+          </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screen 10 -->
+  <section id="brenda" class="tips tips--brenda tips--single" style="--n: 1" aria-labelledby="brenda-title">
+    <div class="tips__stage">
+      <div class="tips__inner">
+        <div class="tips__header">
+          <h2 id="brenda-title" class="tips__label"><img src="brenda%20label.png" alt="Brenda’s tips" width="764" height="130" style="--lw: 764"></h2>
+          <div class="tips__nav">
+            <p class="tips__count" aria-hidden="true">1/1</p>
+          </div>
+        </div>
+        <img class="tips__cutout" src="brenda%20cutout.png" alt="Brenda, smiling, seated at a table." width="1622" height="1684" decoding="async">
+        <div class="bubble">
+          <ol class="bubble__tips">
+          <li class="bubble__tip is-active">
+            <p>Senior centers often offer breakfast or lunch to seniors for free, though they may not always be hot meals.</p>
+          </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screen 11 -->
+  <section id="leonard" class="tips tips--leonard tips--left" style="--n: 2" aria-labelledby="leonard-title">
+    <div class="tips__stage">
+      <div class="tips__inner">
+        <div class="tips__header">
+          <h2 id="leonard-title" class="tips__label"><img src="leonard%20label.png" alt="Leonard’s tips" width="777" height="149" style="--lw: 777"></h2>
+          <div class="tips__nav">
+            <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <p class="tips__count" aria-hidden="true">1/2</p>
+            <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+        <img class="tips__cutout" src="leonard%20cutout.png" alt="Leonard, standing beside a raised garden bed of tomato plants." width="2380" height="1939" decoding="async">
+        <div class="bubble">
+          <ol class="bubble__tips">
+          <li class="bubble__tip is-active">
+            <p>Farm House Food Distributors on Woodland offers wholesale prices on cases of meat and fish to the public.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>Grow your own vegetables when you can — it’s cheaper and free of chemicals.</p>
+          </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screen 12 -->
   <section class="copy copy--tight">
     <div class="copy__inner">
-      <h2>Resources to know:</h2>
+      <h2>Looking for resources? Check these out:</h2>
 
-      <h3>Senior Transportation Connection</h3>
-      <ul>
-        <li>Call <a href="tel:+12166642833">216.664.2833</a> to sign up</li>
-        <li>$1.25 per ride in Cleveland</li>
+      <h3 id="food">Food</h3>
+
+      <h4>Greater Cleveland Food Bank</h4>
+      <p>Looking for a food giveaway near you? Call <a href="tel:+12167382067">(216) 738-2067</a> or <a href="tel:+18557382067">(855) 738-2067</a>. The Greater Cleveland Food Bank can share free food options near you, including food giveaways and hot meal programs.</p>
+      <p>You can also call these numbers to find locations that give out “senior boxes” or host “senior markets.” Senior boxes contain shelf-stable food and are passed out monthly to low-income seniors. Senior markets distribute fresh produce to senior-specific locations, like apartment complexes or senior centers.</p>
+
+      <h4>211</h4>
+      <p>Call <a href="tel:211">211</a> to get a list of food giveaways, hot meal programs and SNAP assistance near you.</p>
+
+      <h3 id="snap">Assistance with SNAP</h3>
+
+      <h4>Cuyahoga County Job and Family Services</h4>
+      <p>Residents can apply for SNAP online or on the phone at <a href="tel:+18446406446">(844) 640-6446</a>. Avoid calling on Mondays and at lunch hours to reduce wait times. Residents can also pick up applications on-site and drop them off in-person at the following locations:</p>
+      <ul class="copy__addresses">
+        <li><strong>Virgil E. Brown</strong><br>1641 Payne Ave.<br>Cleveland, Ohio 44114</li>
+        <li><strong>Quincy Place</strong><br>8111 Quincy Ave.<br>Cleveland, Ohio 44104</li>
+        <li><strong>Jane Edna Hunter</strong><br>3955 Euclid Ave.<br>Cleveland, Ohio 44115</li>
       </ul>
 
-      <h3>Greater Cleveland Food Bank</h3>
-      <ul>
-        <li>Call <a href="tel:+12167382067">216.738.2067</a></li>
-        <li>Can help you find nearby free food options and apply for SNAP.</li>
-      </ul>
+      <h4>Greater Cleveland Food Bank</h4>
+      <p>Call <a href="tel:+12167382067">(216) 738-2067</a> or <a href="tel:+18557382067">(855) 738-2067</a>. The Greater Cleveland Food Bank has a full-time staff to help individuals apply for SNAP, Medicaid, Medicare Savings and other benefits.</p>
 
-      <h3>Looking for home-delivered meals?</h3>
-      <ul>
-        <li>Western Reserve Area Agency on Aging: <a href="tel:+18006267277">800-626-7277</a> or <a href="tel:+12166210303">216-621-0303</a></li>
-        <li>Benjamin Rose Institute on Aging: <a href="tel:+12163731994">(216) 373-1994</a></li>
-        <li>Cuyahoga County’s options program: <a href="tel:+12164206700">(216) 420-6700</a></li>
-      </ul>
+      <h4>Cleveland libraries</h4>
+      <p>Library staff at Cleveland public libraries can help residents apply for SNAP by faxing documents to the county’s Job and Family Services department and assisting with technology questions. Read more about what librarians can and can’t do here.</p>
+
+      <h3 id="meals">Home-delivered meals</h3>
+
+      <h4>Western Reserve Area Agency on Aging</h4>
+      <p>The agency distributes federal funding to local providers across Cuyahoga and other nearby counties that deliver meals to people who are 60 and over. The meals are free, though donations are optional. Seniors with the greatest economic, social and physical needs are prioritized, but there are no income limits on who can receive these meals.</p>
+      <p>Call <a href="tel:+18006267277">(800) 626-7277</a> or <a href="tel:+12166210303">(216) 621-0303</a> to request assistance. Seniors will likely be directed to the senior center, nonprofit or government agency nearest them that pass out meals.</p>
+
+      <h4>Benjamin Rose Institute on Aging</h4>
+      <p>The Benjamin Rose Institute offers meals on wheels deliveries to Cuyahoga County seniors who are unable to shop for or prepare meals independently. The meals are free for residents over 60. Call <a href="tel:+12163731994">(216) 373-1994</a> or email <a href="mailto:intake@benrose.org">intake@benrose.org</a> to request service. There is currently a waitlist for the program.</p>
+
+      <h4>Cuyahoga County’s program for seniors not on Medicaid</h4>
+      <p>The Cuyahoga County Options for Independent Living program offers home-delivered meals to residents who are over 60 with limited income and who do not qualify for Medicaid. The program can offer 20 meals each month for $5 a month. Call <a href="tel:+12164206700">(216) 420-6700</a> if interested. There is currently a waitlist for the program.</p>
+
+      <h3 id="transportation">Transportation</h3>
+
+      <h4>Senior Transportation Connection</h4>
+      <p>The nonprofit offers two rides a week (one round trip) for Cleveland seniors 60 and older who have limited transportation. Rides in the city of Cleveland are free and $1.25 each way for rides outside the city limits. Rides outside of Cleveland are for medical purposes only. A 10-mile limit exists for all trips.</p>
+      <p>Call <a href="tel:+12166642833">(216) 664-2833</a> to sign up.</p>
+
+      <h4>RTA Paratransit</h4>
+      <p>RTA’s Paratransit service will provide door-to-door bus service for residents with disabilities. Applications are available online. Residents can also call <a href="tel:+12165665124">(216) 566-5124</a> to get an application mailed to them. Residents can call that same number if they need assistance completing the application. RTA’s main office at 1240 W. 6th St. also has applications.</p>
     </div>
   </section>
 </main>
 
-<noscript>
-  <style>
-    .tips__layer { opacity: 1 !important; transform: none !important; }
-  </style>
-</noscript>
-
 <script>
-  /* Each tips screen has a hidden trigger point. The first time it comes into
-     view, the screen gets .is-on and its entrance plays. It is never removed,
-     so scrolling back up doesn't reverse or replay anything. Screens already
-     above the fold when the page loads (a reload mid-page) skip the animation
-     and just appear. */
+  /* Tips screens.
+     1. Pinning: a screen with more than one tip gets .is-scrolly, which makes
+        it taller than the viewport with a sticky stage, as long as the stage
+        fits on screen. When it doesn't (big zoom, large default text, short
+        windows) it stays a plain screen with every tip listed. Rechecked on
+        resize and whenever the text reflows.
+     2. Which tip shows: while pinned, each --step of scrolling moves to the
+        next tip; the bubble crossfades between them.
+     3. Entrance: the first time a bubble comes into view it pops out of its
+        tail (.is-on). It's never removed, so scrolling back up doesn't replay
+        it. Bubbles already on screen at load (reload mid-page) just appear. */
   (function () {
-    var pending = Array.prototype.slice.call(document.querySelectorAll(".tips-scene"))
-      .map(function (scene) {
-        return { scene: scene, trigger: scene.querySelector(".tips-scene__trigger") };
-      })
-      .filter(function (item) { return item.trigger; });
+    var scenes = Array.prototype.slice.call(document.querySelectorAll(".tips"))
+      .map(function (section) {
+        return {
+          section: section,
+          inner: section.querySelector(".tips__inner"),
+          bubble: section.querySelector(".bubble"),
+          tips: Array.prototype.slice.call(section.querySelectorAll(".bubble__tip")),
+          count: section.querySelector(".tips__count"),
+          arrows: Array.prototype.slice.call(section.querySelectorAll(".tips__arrow")),
+          active: 0,
+          lock: null
+        };
+      });
 
-    var queued = false;
+    function setActive(scene, index) {
+      if (index === scene.active) return;
+      scene.tips[scene.active].classList.remove("is-active");
+      scene.tips[index].classList.add("is-active");
+      scene.active = index;
+      scene.count.textContent = (index + 1) + "/" + scene.tips.length;
+      scene.arrows.forEach(function (arrow) {
+        var to = index + Number(arrow.getAttribute("data-dir"));
+        arrow.disabled = to < 0 || to >= scene.tips.length;
+      });
+    }
+
+    // Arrows scroll the page to where that tip shows, so clicking and
+    // scrolling always agree.
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    function goTo(scene, index) {
+      var section = scene.section;
+      var n = scene.tips.length;
+      if (!section.classList.contains("is-scrolly")) return;
+      var step = (section.offsetHeight - window.innerHeight) / (n - 0.5);
+      var top = section.getBoundingClientRect().top + window.pageYOffset;
+      // Show the tip right away; scroll updates won't override it until the
+      // page arrives there (or a moment passes, if the scroll is cut short).
+      setActive(scene, index);
+      scene.lock = index;
+      clearTimeout(scene.lockTimer);
+      scene.lockTimer = setTimeout(function () { scene.lock = null; }, 1200);
+      window.scrollTo({ top: Math.round(top + index * step), behavior: reduceMotion.matches ? "auto" : "smooth" });
+    }
+
+    function fit() {
+      var viewportHeight = window.innerHeight;
+      scenes.forEach(function (scene) {
+        if (scene.tips.length < 2) return;
+        scene.section.classList.add("is-scrolly");
+        // Room for the stage's own top and bottom padding.
+        var fits = scene.inner.offsetHeight + 48 <= viewportHeight;
+        scene.section.classList.toggle("is-scrolly", fits);
+      });
+    }
 
     function update(instant) {
       queued = false;
       var viewportHeight = window.innerHeight;
 
-      pending = pending.filter(function (item) {
-        if (item.trigger.getBoundingClientRect().top >= viewportHeight) return true;
-        if (instant) item.scene.classList.add("no-anim");
-        item.scene.classList.add("is-on");
-        return false;
-      });
+      scenes.forEach(function (scene) {
+        var section = scene.section;
 
-      if (!pending.length) {
-        window.removeEventListener("scroll", queue);
-        window.removeEventListener("resize", queue);
-        window.removeEventListener("load", queue);
-      }
+        if (!section.classList.contains("is-on") &&
+            scene.bubble.getBoundingClientRect().top < viewportHeight * 0.75) {
+          if (instant) section.classList.add("no-anim");
+          section.classList.add("is-on");
+        }
+
+        if (section.classList.contains("is-scrolly")) {
+          var n = scene.tips.length;
+          var step = (section.offsetHeight - viewportHeight) / (n - 0.5);
+          var index = Math.max(0, Math.min(n - 1,
+            Math.round(-section.getBoundingClientRect().top / step)));
+          if (scene.lock != null) {
+            if (index !== scene.lock) return;
+            scene.lock = null;
+          }
+          setActive(scene, index);
+        }
+      });
     }
 
+    var queued = false;
     function queue() {
       if (!queued) {
         queued = true;
@@ -666,9 +1257,49 @@
       }
     }
 
+    function refit() {
+      fit();
+      queue();
+    }
+
+    scenes.forEach(function (scene) {
+      scene.arrows.forEach(function (arrow) {
+        arrow.addEventListener("click", function () {
+          var to = scene.active + Number(arrow.getAttribute("data-dir"));
+          if (to >= 0 && to < scene.tips.length) goTo(scene, to);
+        });
+      });
+    });
+
+    // A focused link inside a hidden tip brings that tip forward.
+    scenes.forEach(function (scene) {
+      scene.tips.forEach(function (tip, index) {
+        tip.addEventListener("focusin", function () { setActive(scene, index); });
+      });
+    });
+
     window.addEventListener("scroll", queue, { passive: true });
-    window.addEventListener("resize", queue);
-    window.addEventListener("load", queue);
+    window.addEventListener("resize", refit);
+    window.addEventListener("load", refit);
+
+    // Text size changes (font settings, zoom, late web fonts) reflow the stage
+    // without always firing resize.
+    if ("ResizeObserver" in window) {
+      var lastWidths = new Map();
+      var observer = new ResizeObserver(function (entries) {
+        var changed = entries.some(function (entry) {
+          var w = Math.round(entry.contentRect.width);
+          var was = lastWidths.get(entry.target);
+          lastWidths.set(entry.target, w);
+          return was !== undefined && was !== w;
+        });
+        if (changed) refit();
+      });
+      scenes.forEach(function (scene) { observer.observe(scene.bubble); });
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
+
+    fit();
     update(true);
   })();
 </script>
