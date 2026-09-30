@@ -140,7 +140,6 @@
     margin-top: auto;   /* with the byline's auto margin: centers heading + subhead */
     pointer-events: none;
     user-select: none;
-    filter: drop-shadow(0 4px 14px rgba(0,0,0,.5));
   }
 
   .subhead {
@@ -244,6 +243,9 @@
     min-height: 100svh;
     padding: 12vh 6vw;
   }
+
+  /* The resources run long; on desktop they get a wider column. */
+  .copy--resources .copy__inner { max-width: 50rem; }
 
   .copy__inner { max-width: 36rem; min-width: 0; overflow-wrap: break-word; }
 
@@ -665,11 +667,30 @@
   .tips.is-scrolly .tips__stage {
     position: sticky;
     top: 0;
-    display: grid;
-    align-content: center;
+    display: flex;
+    flex-direction: column;
     height: 100vh;
     height: 100svh;
     padding-block: 1.5rem;
+  }
+
+  /* Centered with auto margins rather than align-content: center. If the
+     content ever outgrows the screen before the script catches up (text
+     enlarged after load), auto margins drop to zero and the extra height
+     runs downward, instead of spilling up over the intro above. */
+  .tips.is-scrolly .tips__inner { margin-block: auto; width: 100%; }
+
+  /* An invisible 10em box: its width changes whenever the text size does,
+     which is how the script notices font-size changes that don't fire a
+     resize (iPhone text size, browser font settings, page zoom). */
+  .st-em-probe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10em;
+    height: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   /* Label art on the left, the tip counter on the right. */
@@ -1409,7 +1430,7 @@
   </section>
 
   <!-- Screen 12 -->
-  <section class="copy copy--tight">
+  <section class="copy copy--tight copy--resources">
     <div class="copy__inner">
       <h2>Looking for resources? Check these out:</h2>
 
@@ -1610,8 +1631,14 @@
     window.addEventListener("load", refit);
 
     // Text size changes (font settings, zoom, late web fonts) reflow the stage
-    // without always firing resize.
+    // without always firing resize. The bubbles' widths catch some of that;
+    // the em probe catches the rest (on phones the bubble is full width, so
+    // bigger text only makes it taller, which the width check can't see).
     if ("ResizeObserver" in window) {
+      var probe = document.createElement("span");
+      probe.className = "st-em-probe";
+      probe.setAttribute("aria-hidden", "true");
+      document.body.appendChild(probe);
       var lastWidths = new Map();
       var observer = new ResizeObserver(function (entries) {
         var changed = entries.some(function (entry) {
@@ -1623,6 +1650,7 @@
         if (changed) refit();
       });
       scenes.forEach(function (scene) { observer.observe(scene.bubble); });
+      observer.observe(probe);
     }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
 
