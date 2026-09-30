@@ -9,7 +9,39 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto:wght@700&display=swap" rel="stylesheet">
 
-<script>document.documentElement.classList.add("js");</script>
+<script>
+/* Which of the ways this page can be read applies, decided before the first
+   paint so nothing shows in a layout that's about to be replaced. The classes
+   go on <html>; the rules that use them are the last block of the stylesheet,
+   and the scripts at the end of the page.
+
+     (no class) STANDALONE: the local / GitHub Pages preview. The page
+       scrolls itself.
+     st-embedded PINNED IFRAME: the published piece. The WordPress post
+       (wordpress-embed-snippet.html) pins a full-screen iframe of this file
+       and relays how far through its own tall scroll track the reader is;
+       this page scrolls itself to match. The pinned tips screens and the
+       screen-height sizing keep working because the iframe is exactly one
+       screen tall, so vh/svh here still mean a screen.
+     st-flat REDUCED MOTION: a plain static page. No tips screen pins; each
+       lists all of its tips in one bubble (the same layout a screen that
+       doesn't fit the window already gets).
+     st-px REDUCED MOTION, EMBEDDED: as above, plus every viewport-relative
+       size restated in px. The parent stops pinning under reduced motion and
+       sizes the iframe to this page's own height instead, which makes vh here
+       mean "a share of this page", not "a share of a screen", so a 100vh
+       hero would grow the page, which grows the iframe, which grows vh
+       again, on and on. */
+(function () {
+  var c = document.documentElement.classList;
+  var embedded = window.self !== window.top;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  c.add("js");
+  if (embedded) c.add("st-embedded");
+  if (reduce) c.add("st-flat");
+  if (embedded && reduce) c.add("st-px");
+})();
+</script>
 
 <style>
   :root {
@@ -844,7 +876,6 @@
   .bubble__tip p {
     margin: auto 0;
     overflow-wrap: break-word;
-    hyphens: auto;
     text-wrap: pretty;
   }
 
@@ -879,16 +910,11 @@
   .js .tips.no-anim .bubble { transition: none; }
 
   /* Per-person art: label, slice lines and tail height for each bubble PNG. */
-  .tips--mary     .bubble { --art: url("mary%20bubble.png");     --t: 175; --r: 150; --b: 130; --l: 150; --tail-y: 125; }
-  .tips--anna     .bubble { --art: url("anna%20bubble.png");     --t: 225; --r: 150; --b: 130; --l: 150; --tail-y: 180; }
-  .tips--mario    .bubble { --art: url("mario%20bubble.png");    --t: 240; --r: 150; --b: 140; --l: 150; --tail-y: 200; }
-  .tips--patricia .bubble { --art: url("patricia%20bubble.png"); --t: 180; --r: 170; --b: 130; --l: 150; --tail-y: 125; }
-  .tips--michael  .bubble { --art: url("michael%20bubble.png");  --t: 270; --r: 160; --b: 150; --l: 160; --tail-y: 225; --k: .023em; }
-  .tips--brenda   .bubble { --art: url("brenda%20bubble.png");   --t: 160; --r: 150; --b: 120; --l: 150; --tail-y: 100; }
-  .tips--leonard  .bubble { --art: url("leonard%20bubble.png");  --t: 250; --r: 150; --b: 140; --l: 150; --tail-y: 200; }
-
-  /* Michael's outline sits farther in from the edges of its image. */
-  .tips--michael .bubble { padding: 2em 2.2em 1.8em 2.9em; }
+  /* Desktop bubble art: one drawing per direction, shared by everyone.
+     --t/--r/--b/--l are its slice lines and --tail-y the tail's height, in
+     image pixels. */
+  .tips--left .bubble { --art: url("senior-tips-desktop-bubble-left.png");  --t: 225; --r: 150; --b: 130; --l: 150; --tail-y: 180; }
+  .tips:not(.tips--left) .bubble { --art: url("senior-tips-desktop-bubble-right.png"); --t: 175; --r: 150; --b: 130; --l: 150; --tail-y: 125; }
 
   /* Leonard is a small figure in a wide picture, so his cutout runs larger:
      past its column toward the left edge, and tucked toward the bubble
@@ -907,8 +933,8 @@
      the top, the bubble nearly full width under it with its tail pointing
      down, then the cutout at the bottom, off to the tail's side and running
      to the screen edge, with the counter and arrows beside it.
-     Mary, Patricia and Brenda use "right bubble.png" (tail bottom right,
-     cutout on the right); everyone else uses "left bubble.png". */
+     Mary, Patricia and Brenda use senior-tips-phone-bubble-right.png (tail bottom right,
+     cutout on the right); everyone else uses senior-tips-phone-bubble-left.png. */
   @media (max-width: 900px), (max-aspect-ratio: 1/1) {
     .tips__stage { padding: 1.25rem var(--gutter) 1.5rem; }
 
@@ -992,7 +1018,7 @@
     .bubble,
     .tips--left .bubble,
     .tips--michael .bubble {
-      --art: url("left%20bubble.png");
+      --art: url("senior-tips-phone-bubble-left.png");
       --t: 95; --r: 90; --b: 75; --l: 150;
       --k: .034em;
       justify-self: stretch;
@@ -1046,7 +1072,7 @@
     }
 
     .tips:not(.tips--left) .bubble {
-      --art: url("right%20bubble.png");
+      --art: url("senior-tips-phone-bubble-right.png");
       --t: 95; --r: 135; --b: 80; --l: 90;
       padding: 1.4em 1.3em 1.9em;
       transform-origin: calc(100% - 106 * var(--k)) 100%;
@@ -1057,6 +1083,49 @@
     .js .tips .bubble,
     .tips.is-scrolly .bubble__tip { transition: none !important; }
   }
+
+  /* ---------- Inside the WordPress iframe ---------- */
+
+  /* The reader scrolls the post, not this page: the parent relays its own
+     scroll position and the script at the end of the page moves this one to
+     match. Smooth scrolling would add its own easing on top of the script's. */
+  html.st-embedded { scroll-behavior: auto; }
+
+  /* The byline ships hardcoded so the standalone preview shows something
+     real, but on the post the parent reads the true author and published
+     date off WordPress and sends them over. Held back until they land (or
+     the script gives up waiting) so the hardcoded date never flashes. */
+  html.st-embedded .entry-meta { visibility: hidden; }
+  html.st-embedded .entry-meta.st-meta-ready { visibility: visible; }
+
+  /* ---------- Reduced motion, inside the iframe ---------- */
+
+  /* Every viewport-relative size the static layout depends on, restated in
+     px (see the note by st-px in the head). --vp stands in for the reader's
+     real screen height, which the parent measures and sends over; the
+     fallback is a middling laptop.
+
+     Note the (max-aspect-ratio: 1/1) media queries resolve against the
+     iframe, which here is as tall as the whole story, so this mode always
+     gets the phone layout (single column, contents first), on desktop too. */
+  html.st-px {
+    --vp: 800px;
+    --heading-h: max(min(var(--vp) * .57, 86vw * .9507), min(15rem, 86vw * .9507));
+  }
+
+  html.st-px .hero { min-height: 0; padding: 40px 1rem 48px; }
+  html.st-px .hero .heading { margin-top: 0; }
+  html.st-px .hero .subhead { margin-top: 1.25rem; }
+  html.st-px .hero .entry-meta { margin-top: 1.5rem; }
+  html.st-px .scroll-cue { display: none; }
+
+  html.st-px .copy { min-height: 0; padding-top: 48px; padding-bottom: 48px; }
+  html.st-px .toc { gap: 2.5rem; padding-top: 48px; padding-bottom: 48px; }
+  html.st-px .copy__inner { justify-self: center; width: 100%; }
+  html.st-px .toc__group { width: 100%; max-width: 40rem; margin-inline: auto; }
+  html.st-px .tips__stage { padding-top: 40px; padding-bottom: 40px; }
+  html.st-px .tips__inner { row-gap: 1.25rem; }
+  html.st-px .tips .tips__cutout { max-height: calc(var(--vp) * .5); }
 </style>
 </head>
 <body>
@@ -1070,8 +1139,8 @@
          role="img"
          aria-label="A man in a yellow shirt lifts a grilled cut of meat on a fork above a small charcoal grill set on a teal picnic table, smoke rising."></div>
 
-    <img class="heading" src="Heading.svg" alt="" aria-hidden="true"
-         width="524" height="498" fetchpriority="high" decoding="async">
+    <img class="heading" src="senior-tips-heading.png" alt="" aria-hidden="true"
+         width="1572" height="1494" fetchpriority="high" decoding="async">
 
     <p class="subhead">Tips and resources by seniors, for seniors</p>
 
@@ -1108,25 +1177,25 @@
              the collage box); list order follows the story. -->
         <ul class="toc__people" role="list">
           <li class="toc__person" style="--x: 66.64%; --y: 4.98%; --w: 18.24%; --ar: 458 / 605; --img-w: 146.29%; --img-x: -22.27%; --img-y: -10.58%">
-            <a href="#mary"><img src="mary%20toc.png" alt="Mary’s tips" width="670" height="732" decoding="async"></a>
+            <a href="#mary"><img src="senior-tips-mary-toc.png" alt="Mary’s tips" width="670" height="732" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 78.45%; --y: 59.8%; --w: 21.55%; --ar: 537 / 570; --img-w: 104.84%; --img-x: -2.42%; --img-y: -2.28%">
-            <a href="#anna"><img src="anna%20toc.png" alt="Anna’s tips" width="563" height="617" decoding="async"></a>
+            <a href="#anna"><img src="senior-tips-anna-toc.png" alt="Anna’s tips" width="563" height="617" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 0.0%; --y: 42.03%; --w: 19.66%; --ar: 496 / 592; --img-w: 104.64%; --img-x: -3.63%; --img-y: -5.24%">
-            <a href="#mario"><img src="mario%20toc.png" alt="Mario’s tips" width="519" height="629" decoding="async"></a>
+            <a href="#mario"><img src="senior-tips-mario-toc.png" alt="Mario’s tips" width="519" height="629" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 11.53%; --y: 0.0%; --w: 14.46%; --ar: 370 / 458; --img-w: 161.62%; --img-x: -30.81%; --img-y: -16.59%">
-            <a href="#patricia"><img src="patricia%20toc.png" alt="Patricia’s tips" width="598" height="679" decoding="async"></a>
+            <a href="#patricia"><img src="senior-tips-patricia-toc.png" alt="Patricia’s tips" width="598" height="679" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 50.38%; --y: 52.82%; --w: 20.04%; --ar: 498 / 609; --img-w: 134.94%; --img-x: -15.06%; --img-y: -2.13%">
-            <a href="#michael"><img src="michael%20toc.png" alt="Michael’s tips" width="672" height="688" decoding="async"></a>
+            <a href="#michael"><img src="senior-tips-michael-toc.png" alt="Michael’s tips" width="672" height="688" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 33.74%; --y: 4.15%; --w: 22.5%; --ar: 566 / 600; --img-w: 105.12%; --img-x: -0.71%; --img-y: -2.83%">
-            <a href="#brenda"><img src="brenda%20toc.png" alt="Brenda’s tips" width="595" height="664" decoding="async"></a>
+            <a href="#brenda"><img src="senior-tips-brenda-toc.png" alt="Brenda’s tips" width="595" height="664" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 21.36%; --y: 62.62%; --w: 20.42%; --ar: 512 / 530; --img-w: 167.38%; --img-x: -26.76%; --img-y: -24.53%">
-            <a href="#leonard"><img src="leo%20toc.png" alt="Leonard’s tips" width="857" height="820" decoding="async"></a>
+            <a href="#leonard"><img src="senior-tips-leo-toc.png" alt="Leonard’s tips" width="857" height="820" decoding="async"></a>
           </li>
         </ul>
       </div>
@@ -1134,10 +1203,10 @@
       <div class="toc__group">
         <h3 class="toc__heading">Helpful resources</h3>
         <ul class="toc__resources" role="list">
-          <li><a href="#food"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="apple.png" alt="" width="2146" height="2323" decoding="async"></span><span class="toc__label">Food</span></a></li>
-          <li><a href="#snap"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="snap.png" alt="" width="1094" height="1158" decoding="async"></span><span class="toc__label">Assistance with SNAP</span></a></li>
-          <li><a href="#meals"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="delivery.png" alt="" width="1019" height="1147" decoding="async"></span><span class="toc__label">Home-delivered meals</span></a></li>
-          <li><a href="#transportation"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="transportation.png" alt="" width="1766" height="929" decoding="async"></span><span class="toc__label">Transportation</span></a></li>
+          <li><a href="#food"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="senior-tips-apple.png" alt="" width="2146" height="2323" decoding="async"></span><span class="toc__label">Food</span></a></li>
+          <li><a href="#snap"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="senior-tips-snap.png" alt="" width="1094" height="1158" decoding="async"></span><span class="toc__label">Assistance with SNAP</span></a></li>
+          <li><a href="#meals"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="senior-tips-delivery.png" alt="" width="1019" height="1147" decoding="async"></span><span class="toc__label">Home-delivered meals</span></a></li>
+          <li><a href="#transportation"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="senior-tips-transportation.png" alt="" width="1766" height="929" decoding="async"></span><span class="toc__label">Transportation</span></a></li>
         </ul>
       </div>
     </nav>
@@ -1148,14 +1217,14 @@
     <div class="tips__stage">
       <div class="tips__inner">
         <div class="tips__header">
-          <h2 id="mary-title" class="tips__label"><span class="visually-hidden">Mary’s tips</span><img class="tips__label-full" src="mary%20label.png" alt="" width="653" height="130" style="--lw: 653"><span class="tips__label-split"><img src="mary%20name.png" alt="" width="421" height="130" style="--lw: 421"><img src="tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
+          <h2 id="mary-title" class="tips__label"><span class="visually-hidden">Mary’s tips</span><img class="tips__label-full" src="senior-tips-mary-label.png" alt="" width="653" height="130" style="--lw: 653"><span class="tips__label-split"><img src="senior-tips-mary-name.png" alt="" width="421" height="130" style="--lw: 421"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <p class="tips__count" aria-hidden="true">1/5</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="mary.png" alt="Mary, talking on a cellphone." width="1406" height="2022" decoding="async">
+        <img class="tips__cutout" src="senior-tips-mary.png" alt="Mary, talking on a cellphone." width="1406" height="2022" decoding="async">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1186,14 +1255,14 @@
     <div class="tips__stage">
       <div class="tips__inner">
         <div class="tips__header">
-          <h2 id="anna-title" class="tips__label"><span class="visually-hidden">Anna’s tips</span><img class="tips__label-full" src="anna%20label.png" alt="" width="614" height="118" style="--lw: 614"><span class="tips__label-split"><img src="anna%20name.png" alt="" width="381" height="118" style="--lw: 381"><img src="tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
+          <h2 id="anna-title" class="tips__label"><span class="visually-hidden">Anna’s tips</span><img class="tips__label-full" src="senior-tips-anna-label.png" alt="" width="614" height="118" style="--lw: 614"><span class="tips__label-split"><img src="senior-tips-anna-name.png" alt="" width="381" height="118" style="--lw: 381"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <p class="tips__count" aria-hidden="true">1/2</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="anna.png" alt="Anna, seated at a table with a bottle of water." width="1999" height="1576" decoding="async">
+        <img class="tips__cutout" src="senior-tips-anna.png" alt="Anna, seated at a table with a bottle of water." width="1999" height="1576" decoding="async">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1213,14 +1282,14 @@
     <div class="tips__stage">
       <div class="tips__inner">
         <div class="tips__header">
-          <h2 id="mario-title" class="tips__label"><span class="visually-hidden">Mario’s tips</span><img class="tips__label-full" src="mario%20label.png" alt="" width="674" height="114" style="--lw: 674"><span class="tips__label-split"><img src="mario%20name.png" alt="" width="431" height="114" style="--lw: 431"><img src="tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
+          <h2 id="mario-title" class="tips__label"><span class="visually-hidden">Mario’s tips</span><img class="tips__label-full" src="senior-tips-mario-label.png" alt="" width="674" height="114" style="--lw: 674"><span class="tips__label-split"><img src="senior-tips-mario-name.png" alt="" width="431" height="114" style="--lw: 431"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <p class="tips__count" aria-hidden="true">1/3</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="mario.png" alt="Mario, seated in a patio chair, pointing to himself." width="1520" height="1565" decoding="async">
+        <img class="tips__cutout" src="senior-tips-mario.png" alt="Mario, seated in a patio chair, pointing to himself." width="1520" height="1565" decoding="async">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1243,14 +1312,14 @@
     <div class="tips__stage">
       <div class="tips__inner">
         <div class="tips__header">
-          <h2 id="patricia-title" class="tips__label"><span class="visually-hidden">Patricia’s tips</span><img class="tips__label-full" src="patricia%20label.png" alt="" width="793" height="136" style="--lw: 793"><span class="tips__label-split"><img src="patricia%20name.png" alt="" width="532" height="136" style="--lw: 532"><img src="tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
+          <h2 id="patricia-title" class="tips__label"><span class="visually-hidden">Patricia’s tips</span><img class="tips__label-full" src="senior-tips-patricia-label.png" alt="" width="793" height="136" style="--lw: 793"><span class="tips__label-split"><img src="senior-tips-patricia-name.png" alt="" width="532" height="136" style="--lw: 532"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <p class="tips__count" aria-hidden="true">1/2</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="patricia%20cutout.png" alt="Patricia, smiling, holding a bag of groceries and a red tumbler." width="1350" height="1288" decoding="async">
+        <img class="tips__cutout" src="senior-tips-patricia-cutout.png" alt="Patricia, smiling, holding a bag of groceries and a red tumbler." width="1350" height="1288" decoding="async">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1270,12 +1339,12 @@
     <div class="tips__stage">
       <div class="tips__inner">
         <div class="tips__header">
-          <h2 id="michael-title" class="tips__label"><span class="visually-hidden">Michael’s tips</span><img class="tips__label-full" src="michael%20label.png" alt="" width="807" height="130" style="--lw: 807"><span class="tips__label-split"><img src="michael%20name.png" alt="" width="563" height="130" style="--lw: 563"><img src="tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
+          <h2 id="michael-title" class="tips__label"><span class="visually-hidden">Michael’s tips</span><img class="tips__label-full" src="senior-tips-michael-label.png" alt="" width="807" height="130" style="--lw: 807"><span class="tips__label-split"><img src="senior-tips-michael-name.png" alt="" width="563" height="130" style="--lw: 563"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
           <div class="tips__nav">
             <p class="tips__count" aria-hidden="true">1/1</p>
           </div>
         </div>
-        <img class="tips__cutout" src="michael%20cutout.png" alt="Michael, seated outdoors in a red polo shirt." width="1530" height="1889" decoding="async">
+        <img class="tips__cutout" src="senior-tips-michael-cutout.png" alt="Michael, seated outdoors in a red polo shirt." width="1530" height="1889" decoding="async">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1292,12 +1361,12 @@
     <div class="tips__stage">
       <div class="tips__inner">
         <div class="tips__header">
-          <h2 id="brenda-title" class="tips__label"><span class="visually-hidden">Brenda’s tips</span><img class="tips__label-full" src="brenda%20label.png" alt="" width="764" height="130" style="--lw: 764"><span class="tips__label-split"><img src="brenda%20name.png" alt="" width="509" height="130" style="--lw: 509"><img src="tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
+          <h2 id="brenda-title" class="tips__label"><span class="visually-hidden">Brenda’s tips</span><img class="tips__label-full" src="senior-tips-brenda-label.png" alt="" width="764" height="130" style="--lw: 764"><span class="tips__label-split"><img src="senior-tips-brenda-name.png" alt="" width="509" height="130" style="--lw: 509"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
           <div class="tips__nav">
             <p class="tips__count" aria-hidden="true">1/1</p>
           </div>
         </div>
-        <img class="tips__cutout" src="brenda%20cutout.png" alt="Brenda, smiling, seated at a table." width="1622" height="1684" decoding="async">
+        <img class="tips__cutout" src="senior-tips-brenda-cutout.png" alt="Brenda, smiling, seated at a table." width="1622" height="1684" decoding="async">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1310,18 +1379,18 @@
   </section>
 
   <!-- Screen 11 -->
-  <section id="leonard" class="tips tips--leonard tips--left" style="--n: 2" aria-labelledby="leonard-title">
+  <section id="leonard" class="tips tips--leonard tips--left" style="--n: 3" aria-labelledby="leonard-title">
     <div class="tips__stage">
       <div class="tips__inner">
         <div class="tips__header">
-          <h2 id="leonard-title" class="tips__label"><span class="visually-hidden">Leonard’s tips</span><img class="tips__label-full" src="leonard%20label.png" alt="" width="777" height="149" style="--lw: 777"><span class="tips__label-split"><img src="leonard%20name.png" alt="" width="524" height="149" style="--lw: 524"><img src="tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
+          <h2 id="leonard-title" class="tips__label"><span class="visually-hidden">Leonard’s tips</span><img class="tips__label-full" src="senior-tips-leonard-label.png" alt="" width="777" height="149" style="--lw: 777"><span class="tips__label-split"><img src="senior-tips-leonard-name.png" alt="" width="524" height="149" style="--lw: 524"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            <p class="tips__count" aria-hidden="true">1/2</p>
+            <p class="tips__count" aria-hidden="true">1/3</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="leonard%20cutout.png" alt="Leonard, standing beside a raised garden bed of tomato plants." width="2380" height="1939" decoding="async">
+        <img class="tips__cutout" src="senior-tips-leonard-cutout.png" alt="Leonard, standing beside a raised garden bed of tomato plants." width="2380" height="1939" decoding="async">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1329,6 +1398,9 @@
           </li>
           <li class="bubble__tip">
             <p>Grow your own vegetables when you can — it’s cheaper and free of chemicals.</p>
+          </li>
+          <li class="bubble__tip">
+            <p>Giant Eagle often has a deal to sell five packs of meat for $25.</p>
           </li>
           </ol>
         </div>
@@ -1341,7 +1413,7 @@
     <div class="copy__inner">
       <h2>Looking for resources? Check these out:</h2>
 
-      <h3 id="food" class="copy__group"><img src="apple.png" alt="" width="2146" height="2323" loading="lazy" decoding="async"><span>Food</span></h3>
+      <h3 id="food" class="copy__group"><img src="senior-tips-apple.png" alt="" width="2146" height="2323" loading="lazy" decoding="async"><span>Food</span></h3>
 
       <h4>Greater Cleveland Food Bank</h4>
       <p>Looking for a food giveaway near you? Call <a href="tel:+12167382067">(216) 738-2067</a> or <a href="tel:+18557382067">(855) 738-2067</a>. The Greater Cleveland Food Bank can share free food options near you, including food giveaways and hot meal programs.</p>
@@ -1350,7 +1422,7 @@
       <h4>211</h4>
       <p>Call <a href="tel:211">211</a> to get a list of food giveaways, hot meal programs and SNAP assistance near you.</p>
 
-      <h3 id="snap" class="copy__group copy__group--flip"><img src="snap.png" alt="" width="1094" height="1158" loading="lazy" decoding="async"><span>Assistance with SNAP</span></h3>
+      <h3 id="snap" class="copy__group copy__group--flip"><img src="senior-tips-snap.png" alt="" width="1094" height="1158" loading="lazy" decoding="async"><span>Assistance with SNAP</span></h3>
 
       <h4>Cuyahoga County Job and Family Services</h4>
       <p>Residents can apply for SNAP online or on the phone at <a href="tel:+18446406446">(844) 640-6446</a>. Avoid calling on Mondays and at lunch hours to reduce wait times. Residents can also pick up applications on-site and drop them off in-person at the following locations:</p>
@@ -1366,7 +1438,7 @@
       <h4>Cleveland libraries</h4>
       <p>Library staff at Cleveland public libraries can help residents apply for SNAP by faxing documents to the county’s Job and Family Services department and assisting with technology questions. Read more about what librarians can and can’t do here.</p>
 
-      <h3 id="meals" class="copy__group"><img src="delivery.png" alt="" width="1019" height="1147" loading="lazy" decoding="async"><span>Home-delivered meals</span></h3>
+      <h3 id="meals" class="copy__group"><img src="senior-tips-delivery.png" alt="" width="1019" height="1147" loading="lazy" decoding="async"><span>Home-delivered meals</span></h3>
 
       <h4>Western Reserve Area Agency on Aging</h4>
       <p>The agency distributes federal funding to local providers across Cuyahoga and other nearby counties that deliver meals to people who are 60 and over. The meals are free, though donations are optional. Seniors with the greatest economic, social and physical needs are prioritized, but there are no income limits on who can receive these meals.</p>
@@ -1378,7 +1450,7 @@
       <h4>Cuyahoga County’s program for seniors not on Medicaid</h4>
       <p>The Cuyahoga County Options for Independent Living program offers home-delivered meals to residents who are over 60 with limited income and who do not qualify for Medicaid. The program can offer 20 meals each month for $5 a month. Call <a href="tel:+12164206700">(216) 420-6700</a> if interested. There is currently a waitlist for the program.</p>
 
-      <h3 id="transportation" class="copy__group copy__group--flip"><img src="transportation.png" alt="" width="1766" height="929" loading="lazy" decoding="async"><span>Transportation</span></h3>
+      <h3 id="transportation" class="copy__group copy__group--flip"><img src="senior-tips-transportation.png" alt="" width="1766" height="929" loading="lazy" decoding="async"><span>Transportation</span></h3>
 
       <h4>Senior Transportation Connection</h4>
       <p>The nonprofit offers two rides a week (one round trip) for Cleveland seniors 60 and older who have limited transportation. Rides in the city of Cleveland are free and $1.25 each way for rides outside the city limits. Rides outside of Cleveland are for medical purposes only. A 10-mile limit exists for all trips.</p>
@@ -1432,7 +1504,15 @@
 
     // Arrows scroll the page to where that tip shows, so clicking and
     // scrolling always agree.
+    // Embedded, this page can't scroll itself (its position belongs to the
+    // post's scroll track), so the pym script at the end of the page swaps
+    // in window.stScrollTo, which asks the post to scroll instead.
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    function scrollPageTo(y) {
+      if (window.stScrollTo) window.stScrollTo(y);
+      else window.scrollTo({ top: y, behavior: reduceMotion.matches ? "auto" : "smooth" });
+    }
+
     function goTo(scene, index) {
       var section = scene.section;
       var n = scene.tips.length;
@@ -1445,10 +1525,15 @@
       scene.lock = index;
       clearTimeout(scene.lockTimer);
       scene.lockTimer = setTimeout(function () { scene.lock = null; }, 1200);
-      window.scrollTo({ top: Math.round(top + index * step), behavior: reduceMotion.matches ? "auto" : "smooth" });
+      scrollPageTo(Math.round(top + index * step));
     }
 
+    // Reduced motion: nothing pins; every screen lists its tips (see st-flat
+    // in the head).
+    var flat = document.documentElement.classList.contains("st-flat");
+
     function fit() {
+      if (flat) return;
       var viewportHeight = window.innerHeight;
       scenes.forEach(function (scene) {
         // Single-tip screens never pin; .is-fit just says the screen fits,
@@ -1544,6 +1629,189 @@
     fit();
     update(true);
   })();
+</script>
+
+<script>
+/* Embedded: the part that needs no pym.js, kept ahead of it so a slow fetch
+   of that file can't hold it up. */
+(function () {
+  if (!document.documentElement.classList.contains("st-embedded")) return;
+  /* A link would otherwise open inside the frame, one screen tall and
+     pinned, so the reader would be reading another site through a letterbox
+     with no way back. _top hands it to the whole window, like any other
+     link in the post. */
+  [].forEach.call(document.querySelectorAll("a[href]"), function (a) {
+    if (/^(?:https?|mailto|tel):/i.test(a.getAttribute("href"))) {
+      a.setAttribute("target", "_top");
+    }
+  });
+})();
+</script>
+
+<!-- pym.js: the channel between this page and the WordPress post that embeds
+     it. See wordpress-embed-snippet.html, the other half of this. -->
+<script src="https://pym.nprapps.org/pym.v1.min.js"></script>
+<script>
+(function () {
+  var html = document.documentElement;
+  if (!html.classList.contains("st-embedded") || !window.pym) return;
+  var flat = html.classList.contains("st-flat");
+  var child = new pym.Child({ polling: 0 });
+  var scroller = document.scrollingElement || document.documentElement;
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function maxScroll() { return Math.max(0, scroller.scrollHeight - window.innerHeight); }
+
+  /* ---------- the real byline, read off the post ---------- */
+
+  var meta = document.querySelector(".hero .entry-meta");
+  var metaShown = false;
+  function showMeta() {
+    if (metaShown || !meta) return;
+    metaShown = true;
+    meta.classList.add("st-meta-ready");
+  }
+  /* The parent reads the author, avatar and published date straight off the
+     post's own (visually hidden) .entry-header and sends them here, so the
+     byline always says whatever WordPress says, with no second copy to keep
+     in step by hand. */
+  child.onMessage("postMeta", function (json) {
+    var m = null;
+    try { m = JSON.parse(json); } catch (e) { m = null; }
+    var avatar = meta && meta.querySelector("img.avatar");
+    var author = meta && meta.querySelector(".byline .author a");
+    var date = meta && meta.querySelector(".posted-on .entry-date.published");
+    if (m && avatar && m.avatarSrc) {
+      avatar.src = m.avatarSrc;
+      avatar.srcset = m.avatarSrcset || "";
+    }
+    if (m && author && m.authorName) {
+      author.textContent = m.authorName;
+      if (m.authorHref) author.href = m.authorHref;
+    }
+    if (m && date && m.dateText) {
+      date.textContent = m.dateText;
+      if (m.dateAttr) date.setAttribute("datetime", m.dateAttr);
+    }
+    showMeta();
+  });
+  /* If the post's Custom HTML block is an older copy that doesn't send it,
+     the hardcoded byline is the best there is: show it rather than leave a
+     hole. Comfortably longer than the handshake can take. */
+  setTimeout(showMeta, 3000);
+
+  /* The reader's real screen height, which only the parent can measure, for
+     the reduced-motion layout's px sizes (see html.st-px in the stylesheet). */
+  child.onMessage("viewport", function (px) {
+    var v = parseFloat(px);
+    if (v > 0) html.style.setProperty("--vp", v + "px");
+  });
+
+  /* ---------- keeping the post's scroll track as long as this page ---------- */
+
+  /* Anything that changes this page's height changes how long the parent's
+     track has to be: web fonts landing and rewrapping a tip, a tips screen
+     deciding it no longer fits and listing its tips instead, the window
+     resizing, a late image. Watching the body catches them all. Flowed, the
+     parent isn't pinning anything and just sizes the frame to fit, which is
+     what pym's own height message is for. */
+  function report() {
+    if (flat) child.sendHeight();
+    else child.sendMessage("trackHeight", String(scroller.scrollHeight));
+  }
+  var queued = false;
+  function queueReport() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; report(); });
+  }
+  report();
+  window.addEventListener("resize", queueReport);
+  window.addEventListener("load", queueReport);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(queueReport);
+  if ("ResizeObserver" in window) new ResizeObserver(queueReport).observe(document.body);
+
+  /* ---------- contents links and the tip arrows ---------- */
+
+  /* This page can't scroll itself to a section. Pinned, its scroll position
+     belongs to the parent's track; flowed, the frame is exactly as tall as
+     its content and has nowhere to scroll. Either way the post has to do
+     the scrolling, so the links ask it to. */
+  var quietUntil = 0;
+  function askParentFor(y, quiet) {
+    var max = maxScroll();
+    child.sendMessage("jumpTo", String(max ? clamp(y / max, 0, 1) : 0));
+    /* A focus jump is this page moving first and the parent catching up, so
+       hold off the progress still arriving from where the parent was. A
+       tapped link is the other way round: there, let the parent's own
+       smooth scroll carry this page along. */
+    if (quiet) quietUntil = Date.now() + 700;
+  }
+  function scrollTopFor(el) {
+    var margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+    return clamp(el.getBoundingClientRect().top + scroller.scrollTop - margin, 0, maxScroll());
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    e.preventDefault();   /* never let the frame scroll itself, even for a bare "#" */
+    var el = document.getElementById(a.getAttribute("href").slice(1));
+    if (!el) return;
+    /* Flowed, pym can work out where the section sits in the post on its
+       own, since the frame stands at its full height in the page. */
+    if (flat) child.scrollParentToChildEl(el.id);
+    else askParentFor(scrollTopFor(el), false);
+  });
+
+  if (flat) return; /* flowed, the frame doesn't scroll: nothing below applies */
+
+  /* The previous / next tip arrows (see scrollPageTo in the tips script). */
+  window.stScrollTo = function (y) { askParentFor(clamp(y, 0, maxScroll()), false); };
+
+  /* ---------- scrolling this page to match the post ---------- */
+
+  /* Taking the scrollbar away here rather than in the stylesheet, so a
+     reader whose browser never got pym.js is left with a page that at least
+     still scrolls by itself. A frame with no scrollbar can still be scrolled
+     by script, which is the only thing that moves it from here on, and the
+     tips screens still stick, because the viewport is still what they stick
+     to. Without this, a wheel over the frame would scroll the story out
+     from under the parent's track and the two would fight. */
+  html.style.overflow = "hidden";
+
+  var targetY = 0, currentY = 0, applied = -1;
+  child.onMessage("progress", function (p) {
+    if (Date.now() < quietUntil) return;
+    var v = parseFloat(p);
+    if (isFinite(v)) targetY = clamp(v, 0, 1) * maxScroll();
+  });
+
+  /* Ease toward the last position the parent reported, on a steady frame
+     loop, rather than moving the page inside the message handler: on a real
+     post (ads, trackers and other plugins all competing for the main
+     thread) those messages arrive in bursts instead of one a frame, and
+     following each one literally shows that burstiness as stutter. */
+  (function tick() {
+    var max = maxScroll();
+    if (targetY > max) targetY = max;
+    var here = scroller.scrollTop;
+    /* Something other than this loop moved the page: tabbing to a link or
+       arrow below the fold, find-in-page, a screen reader moving its cursor.
+       The browser scrolls the frame to bring that into view, leaving it
+       somewhere the parent's track knows nothing about. Take that as the new
+       truth and ask the track to come to it, instead of snapping the reader
+       back on the next message. */
+    if (applied >= 0 && Math.abs(here - applied) > 2) {
+      currentY = targetY = here;
+      askParentFor(here, true);
+    }
+    var d = targetY - currentY;
+    currentY = Math.abs(d) < 0.5 ? targetY : currentY + d * 0.22;
+    if (Math.abs(currentY - here) >= 0.5) scroller.scrollTop = currentY;
+    applied = currentY;
+    requestAnimationFrame(tick);
+  })();
+})();
 </script>
 
 </body>

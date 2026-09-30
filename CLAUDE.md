@@ -9,3 +9,11 @@ Guidance for building pinned-photo "scrolly" stories for Signal Cleveland (signa
 - Byline markup copies the live site's `.entry-subhead` / `.entry-meta` classes so it matches theme styles. Photo credit sits directly under it.
 - Cards: white, `box-shadow: 0 20px 50px rgba(0,0,0,.4)`, body copy `clamp(18px,1.9vw,21px)` / 1.75. Desktop cards are capped near `46vw` so the photo stays visible; mobile widens to 82–90vw.
 - Accessibility: photo layers use `role="img"` + `aria-label`; static-fallback photos are `aria-hidden`; the real title stays in the DOM (visually hidden) for screen readers.
+
+## Embedding on WordPress (pinned iframe)
+
+- `senior-tips.html` is the child page and `wordpress-embed-snippet.html` is the parent snippet for a Custom HTML block. Prefix is `st-` (`#st-embed-wrap`, `#st-story-hook`). Same pattern as the "senior story" folder: the parent pins a full-screen iframe and sends `progress`; the child scrolls itself to match and reports its height as `trackHeight`.
+- Modes are classes on `<html>`, set in the head script: `st-embedded`, `st-flat` (reduced motion, nothing pins), `st-px` (both: no `vh` sizing, the parent sizes the iframe to the content).
+- Contents links and the tip arrows can't scroll the iframe; they send `jumpTo` and the parent scrolls. The tips script calls `window.stScrollTo` when it exists.
+- Images are referenced by bare filename (`senior-tips-*.png`), so they must sit in the same Media Library month folder as the HTML file, with unchanged names.
+- `_embed-test.html` is a local stand-in for the post (run `python3 -m http.server` and open it). Rebuild it if the snippet changes.
