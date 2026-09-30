@@ -26,6 +26,10 @@
     --border: #ccd8db;
     --paper: #fff;
 
+    /* Side margin on phones. Capped in px so that enlarging the font size
+       doesn't widen the margins and squeeze the story. */
+    --gutter: min(1.5rem, 24px);
+
     /* Heading.svg is 392.88 x 373.5 with the lettering filling the canvas.
        Its height is the smaller of a screen-height share (desktop) and a
        width-based size (phones), but never below a rem-based floor, so it
@@ -134,7 +138,7 @@
     align-items: center;
     align-content: center;
     font-family: var(--font-body);
-    font-size: 0.95rem;
+    font-size: min(0.95rem, 4.6vw);   /* vw cap keeps the one-line byline on screen */
     line-height: 1.35;
     color: var(--border);
     white-space: nowrap;
@@ -209,7 +213,7 @@
     padding: 12vh 6vw;
   }
 
-  .copy__inner { max-width: 36rem; }
+  .copy__inner { max-width: 36rem; min-width: 0; overflow-wrap: break-word; }
 
   .copy h2 {
     margin: 0 0 .6em;
@@ -221,7 +225,7 @@
 
   .copy p {
     margin: 0;
-    font-size: clamp(18px, 1.9vw, 21px);
+    font-size: clamp(1.125rem, 1.9vw, 1.3125rem);
     line-height: 1.75;
     text-wrap: pretty;
   }
@@ -255,6 +259,7 @@
      sides alternate down the page. */
   .copy h3.copy__group {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: .5em;
     margin: 2.2em 0 .5em;
@@ -280,7 +285,7 @@
   .copy ul {
     margin: 0;
     padding-left: 1.25em;
-    font-size: clamp(18px, 1.9vw, 21px);
+    font-size: clamp(1.125rem, 1.9vw, 1.3125rem);
     line-height: 1.75;
   }
 
@@ -314,8 +319,9 @@
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: .15em;
-    white-space: nowrap;   /* never break a phone number across lines */
   }
+
+  .copy a[href^="tel:"] { white-space: nowrap; }   /* never break a phone number across lines */
 
   .copy a:hover,
   .copy a:focus-visible { text-decoration-thickness: 2px; }
@@ -349,9 +355,12 @@
   }
 
   @media (max-width: 900px), (max-aspect-ratio: 1/1) {
-    .copy { padding: 3rem 1.5rem 5rem; }
+    .copy { padding: 3rem var(--gutter) 5rem; grid-template-columns: minmax(0, 1fr); }
 
-    .copy--tight { padding: 2.5rem 1.5rem 3rem; }
+    .copy--tight { padding: 2.5rem var(--gutter) 3rem; }
+
+    /* Fill the column exactly, so large text wraps inside it. */
+    .copy__inner { justify-self: stretch; }
     .tips + .copy--tight { padding-top: 0; }
 
     .copy--split { grid-template-columns: 1fr; }
@@ -540,17 +549,18 @@
     .intro { grid-template-columns: minmax(0, 1fr); }
 
     /* The contents come first on phones, above the intro copy. */
-    .toc { order: -1; padding: 2.5rem 1.5rem 3rem; }
+    .toc { order: -1; padding: 2.5rem var(--gutter) 3rem; }
 
     /* The intro is only as tall as its copy, so it sits right under the contents. */
     .intro__copy { min-height: 0; padding-top: 2.5rem; padding-bottom: 2.5rem; }
 
     /* Use most of the side margins so the faces stay a comfortable size. */
-    .toc__people { margin: 1rem -1rem 0; }
+    .toc__people { margin: 1rem calc(var(--gutter) * -.65) 0; }
 
     /* Each resource's picture is its bullet: always shown, no arrow and
        no animation. */
-    .toc__resources { font-size: 1.3rem; }
+    .toc__resources { font-size: min(1.3rem, 6.4vw); }
+    .toc__label { min-width: 0; overflow-wrap: anywhere; }
 
     .toc__resources li + li { margin-top: .6em; }
 
@@ -833,6 +843,8 @@
 
   .bubble__tip p {
     margin: auto 0;
+    overflow-wrap: break-word;
+    hyphens: auto;
     text-wrap: pretty;
   }
 
@@ -898,7 +910,7 @@
      Mary, Patricia and Brenda use "right bubble.png" (tail bottom right,
      cutout on the right); everyone else uses "left bubble.png". */
   @media (max-width: 900px), (max-aspect-ratio: 1/1) {
-    .tips__stage { padding: 1.25rem 1.5rem 1.5rem; }
+    .tips__stage { padding: 1.25rem var(--gutter) 1.5rem; }
 
     .tips__inner,
     .tips--left .tips__inner {
@@ -923,11 +935,11 @@
     /* The header steps aside so the label and the counter can sit in
        different rows of the grid. */
     .tips__header { display: contents; }
-    .tips__label { grid-area: header; justify-self: start; margin-left: -.9rem; }
+    .tips__label { grid-area: header; justify-self: start; margin-left: calc(var(--gutter) * -.6); }
     .tips__label .tips__label-full { display: none; }
     .tips__label-split { display: block; }
     /* One shared scale; the widest name (Michael's, 563px) fills the width. */
-    .tips__label img { --label-scale: min(.95px, (100vw - 1.2rem) / 563, 32rem / 563); }
+    .tips__label img { --label-scale: min(.95px, (100vw - var(--gutter) * .8) / 563, 32rem / 563); }
     .tips__label-split img + img { margin: -.15rem 0 0 .9rem; }
 
     /* The cutout tucks up close under the bubble's tail, which makes room
@@ -944,26 +956,26 @@
       justify-items: center;
       gap: .6rem .75rem;
       margin: 0;
-      font-size: clamp(2.5rem, 1rem + 7vw, 3.5rem);
+      font-size: min(clamp(2.5rem, 1rem + 7vw, 3.5rem), 13vw);
     }
 
     .tips__count { grid-column: 1 / -1; grid-row: 1; }
 
-    .tips__arrow { width: 2.75rem; height: 2.75rem; }
+    .tips__arrow { width: min(2.75rem, 56px); height: min(2.75rem, 56px); }
 
     .tips__cutout,
     .tips--mary .tips__cutout {
       justify-self: end;
       align-self: end;
-      max-width: calc(100% + 1.5rem);
+      max-width: calc(100% + var(--gutter));
       max-height: 29vh;
       max-height: 29svh;
-      margin-right: -1.5rem;   /* runs to the screen edge */
+      margin-right: calc(var(--gutter) * -1);   /* runs to the screen edge */
     }
 
     .tips--left .tips__cutout {
       justify-self: start;
-      margin: -.75rem 0 0 -1.5rem;
+      margin: -.75rem 0 0 calc(var(--gutter) * -1);
     }
 
     .tips--single .tips__cutout {
@@ -986,7 +998,7 @@
       justify-self: stretch;
       width: auto;
       padding: 1.5em 1.3em 1.8em;
-      font-size: clamp(1.3rem, .55rem + 4.4vw, 2rem);
+      font-size: min(clamp(1.3rem, .55rem + 4.4vw, 2rem), 7.6vw);   /* vw cap: enlarged fonts can't outgrow the bubble */
       line-height: 1.35;
       transform-origin: calc(130 * var(--k)) 100%;
     }
@@ -996,12 +1008,12 @@
       .tips__inner, .tips--left .tips__inner { row-gap: .6rem; }
       .tips__cutout, .tips--mary .tips__cutout { max-height: 22vh; max-height: 22svh; }
       .tips--single .tips__cutout { max-height: max(25vh, 13rem); max-height: max(25svh, 13rem); }
-      .bubble, .tips--left .bubble, .tips--michael .bubble { font-size: clamp(1.2rem, .5rem + 3.9vw, 2rem); }
+      .bubble, .tips--left .bubble, .tips--michael .bubble { font-size: min(clamp(1.2rem, .5rem + 3.9vw, 2rem), 7.6vw); }
     }
 
     /* Patricia's tips are the longest; slightly smaller text and cutout
        keep her screen pinned. */
-    .tips--patricia .bubble { font-size: clamp(1.15rem, .5rem + 3.7vw, 1.8rem); }
+    .tips--patricia .bubble { font-size: min(clamp(1.15rem, .5rem + 3.7vw, 1.8rem), 7.6vw); }
     .tips--patricia .tips__cutout { max-height: 23vh; max-height: 23svh; }
 
     /* Leonard's wide cutout gets the full width; his counter and arrows
@@ -1016,10 +1028,10 @@
 
     .tips--leonard .tips__cutout {
       justify-self: center;
-      max-width: calc(100% + 3rem);
+      max-width: calc(100% + var(--gutter) * 2);
       max-height: 27vh;
       max-height: 27svh;
-      margin: -.75rem -1.5rem 0;
+      margin: -.75rem calc(var(--gutter) * -1) 0;
     }
 
     .tips--leonard .tips__nav {
