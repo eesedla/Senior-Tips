@@ -1,0 +1,8 @@
+{
+  "name": "senior-tips",
+  "private": true,
+  "description": "Builds the reader-view text copy for the WordPress snippet (node build-reader-copy.js).",
+  "devDependencies": {
+    "jsdom": "^26.0.0"
+  }
+}

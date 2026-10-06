@@ -603,11 +603,11 @@
   @media (max-width: 900px), (max-aspect-ratio: 1/1) {
     .intro { grid-template-columns: minmax(0, 1fr); }
 
-    /* The contents come first on phones, above the intro copy. */
-    .toc { order: -1; padding: 2.5rem var(--gutter) 3rem; }
+    /* Phones: the intro first, then the contents under it. */
+    .toc { padding: 2.5rem var(--gutter) 3rem; }
 
-    /* The intro is only as tall as its copy, so it sits right under the contents. */
-    .intro__copy { min-height: 0; padding-top: 2.5rem; padding-bottom: 2.5rem; }
+    /* The intro is only as tall as its copy, so the contents follow right after. */
+    .intro__copy { min-height: 0; padding-top: 3rem; padding-bottom: 2.5rem; }
 
     /* Use most of the side margins so the faces stay a comfortable size. */
     .toc__people { margin: 1rem calc(var(--gutter) * -.65) 0; }
@@ -724,7 +724,7 @@
   }
 
   /* Label art on the left, the tip counter on the right. */
-  .tips__header {
+  .tips__head {
     grid-area: header;
     display: flex;
     align-items: center;
@@ -793,7 +793,7 @@
   /* Desktop: the header shares the columns below it, so the counter sits
      over the right-hand column like in the mockup. */
   @supports (grid-template-columns: subgrid) {
-    .tips__header {
+    .tips__head {
       display: grid;
       grid-template-columns: subgrid;
     }
@@ -970,8 +970,8 @@
   /* Desktop bubble art: one drawing per direction, shared by everyone.
      --t/--r/--b/--l are its slice lines and --tail-y the tail's height, in
      image pixels. */
-  .tips--left .bubble { --art: url("senior-tips-desktop-bubble-left.png");  --t: 225; --r: 150; --b: 130; --l: 150; --tail-y: 180; }
-  .tips:not(.tips--left) .bubble { --art: url("senior-tips-desktop-bubble-right.png"); --t: 175; --r: 150; --b: 130; --l: 150; --tail-y: 125; }
+  .tips--left .bubble { --art: url("https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-desktop-bubble-left.png");  --t: 225; --r: 150; --b: 130; --l: 150; --tail-y: 180; }
+  .tips:not(.tips--left) .bubble { --art: url("https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-desktop-bubble-right.png"); --t: 175; --r: 150; --b: 130; --l: 150; --tail-y: 125; }
 
   /* Leonard is a small figure in a wide picture, so his cutout runs larger:
      past its column toward the left edge, and tucked toward the bubble
@@ -990,8 +990,8 @@
      the top, the bubble nearly full width under it with its tail pointing
      down, then the cutout at the bottom, off to the tail's side and running
      to the screen edge, with the counter and arrows beside it.
-     Mary, Patricia and Brenda use senior-tips-phone-bubble-right.png (tail bottom right,
-     cutout on the right); everyone else uses senior-tips-phone-bubble-left.png. */
+     Mary, Patricia and Brenda use https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-phone-bubble-right.png (tail bottom right,
+     cutout on the right); everyone else uses https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-phone-bubble-left.png. */
   @media (max-width: 900px), (max-aspect-ratio: 1/1) {
     .tips__stage { padding: 1.25rem var(--gutter) 1.5rem; }
 
@@ -1017,7 +1017,7 @@
 
     /* The header steps aside so the label and the counter can sit in
        different rows of the grid. */
-    .tips__header { display: contents; }
+    .tips__head { display: contents; }
     .tips__label { grid-area: header; justify-self: start; margin-left: calc(var(--gutter) * -.6); }
     .tips__label .tips__label-full { display: none; }
     .tips__label-split { display: block; }
@@ -1075,7 +1075,7 @@
     .bubble,
     .tips--left .bubble,
     .tips--michael .bubble {
-      --art: url("senior-tips-phone-bubble-left.png");
+      --art: url("https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-phone-bubble-left.png");
       --t: 95; --r: 90; --b: 75; --l: 150;
       --k: .034em;
       justify-self: stretch;
@@ -1129,7 +1129,7 @@
     }
 
     .tips:not(.tips--left) .bubble {
-      --art: url("senior-tips-phone-bubble-right.png");
+      --art: url("https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-phone-bubble-right.png");
       --t: 95; --r: 135; --b: 80; --l: 90;
       padding: 1.4em 1.3em 1.9em;
       transform-origin: calc(100% - 106 * var(--k)) 100%;
@@ -1275,7 +1275,7 @@
          (hidden until forced colors), so screen readers, find-in-page and
          translation all get the headline. -->
     <h1 id="story-title" class="hero__title">
-      <img class="heading" src="senior-tips-heading.png" srcset="senior-tips-heading-768x730.png 768w, senior-tips-heading-1024x973.png 1024w, senior-tips-heading-1200x1140.png 1200w, senior-tips-heading-1536x1460.png 1536w, senior-tips-heading.png 1572w" sizes="(max-width: 900px) 614px, (max-aspect-ratio: 1/1) 863px, 863px" alt=""
+      <img class="heading" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading-768x730.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading-1024x973.png 1024w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading-1200x1140.png 1200w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading-1536x1460.png 1536w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading.png 1572w" sizes="(max-width: 900px) 614px, (max-aspect-ratio: 1/1) 863px, 863px" alt=""
            width="1572" height="1494" fetchpriority="high" decoding="async">
       <span class="art-text">How Cleveland seniors are staying fed</span>
     </h1>
@@ -1315,25 +1315,25 @@
              the collage box); list order follows the story. -->
         <ul class="toc__people" role="list">
           <li class="toc__person" style="--x: 66.64%; --y: 4.98%; --w: 18.24%; --ar: 458 / 605; --img-w: 146.29%; --img-x: -22.27%; --img-y: -10.58%">
-            <a href="#mary"><img src="senior-tips-mary-toc.png" srcset="senior-tips-mary-toc-275x300.png 275w, senior-tips-mary-toc-400x437.png 400w, senior-tips-mary-toc-550x601.png 550w, senior-tips-mary-toc.png 670w" sizes="(max-width: 900px) 200px, (max-aspect-ratio: 1/1) 273px, 273px" alt="Mary’s tips" width="670" height="732" decoding="async"></a>
+            <a href="#mary"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-toc.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-toc-275x300.png 275w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-toc-400x437.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-toc-550x601.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-toc.png 670w" sizes="(max-width: 900px) 200px, (max-aspect-ratio: 1/1) 273px, 273px" alt="Mary’s tips" width="670" height="732" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 78.45%; --y: 59.8%; --w: 21.55%; --ar: 537 / 570; --img-w: 104.84%; --img-x: -2.42%; --img-y: -2.28%">
-            <a href="#anna"><img src="senior-tips-anna-toc.png" srcset="senior-tips-anna-toc-274x300.png 274w, senior-tips-anna-toc-400x438.png 400w, senior-tips-anna-toc-550x603.png 550w" sizes="(max-width: 900px) 170px, (max-aspect-ratio: 1/1) 231px, 231px" alt="Anna’s tips" width="563" height="617" decoding="async"></a>
+            <a href="#anna"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-toc.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-toc-274x300.png 274w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-toc-400x438.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-toc-550x603.png 550w" sizes="(max-width: 900px) 170px, (max-aspect-ratio: 1/1) 231px, 231px" alt="Anna’s tips" width="563" height="617" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 0.0%; --y: 42.03%; --w: 19.66%; --ar: 496 / 592; --img-w: 104.64%; --img-x: -3.63%; --img-y: -5.24%">
-            <a href="#mario"><img src="senior-tips-mario-toc.png" srcset="senior-tips-mario-toc-248x300.png 248w, senior-tips-mario-toc-400x485.png 400w, senior-tips-mario-toc.png 519w" sizes="(max-width: 900px) 155px, (max-aspect-ratio: 1/1) 211px, 211px" alt="Mario’s tips" width="519" height="629" decoding="async"></a>
+            <a href="#mario"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-toc.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-toc-248x300.png 248w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-toc-400x485.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-toc.png 519w" sizes="(max-width: 900px) 155px, (max-aspect-ratio: 1/1) 211px, 211px" alt="Mario’s tips" width="519" height="629" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 11.53%; --y: 0.0%; --w: 14.46%; --ar: 370 / 458; --img-w: 161.62%; --img-x: -30.81%; --img-y: -16.59%">
-            <a href="#patricia"><img src="senior-tips-patricia-toc.png" srcset="senior-tips-patricia-toc-264x300.png 264w, senior-tips-patricia-toc-400x454.png 400w, senior-tips-patricia-toc-550x624.png 550w" sizes="(max-width: 900px) 176px, (max-aspect-ratio: 1/1) 239px, 239px" alt="Patricia’s tips" width="598" height="679" decoding="async"></a>
+            <a href="#patricia"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-toc.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-toc-264x300.png 264w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-toc-400x454.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-toc-550x624.png 550w" sizes="(max-width: 900px) 176px, (max-aspect-ratio: 1/1) 239px, 239px" alt="Patricia’s tips" width="598" height="679" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 50.38%; --y: 52.82%; --w: 20.04%; --ar: 498 / 609; --img-w: 134.94%; --img-x: -15.06%; --img-y: -2.13%">
-            <a href="#michael"><img src="senior-tips-michael-toc.png" srcset="senior-tips-michael-toc-293x300.png 293w, senior-tips-michael-toc-400x410.png 400w, senior-tips-michael-toc-550x563.png 550w, senior-tips-michael-toc.png 672w" sizes="(max-width: 900px) 203px, (max-aspect-ratio: 1/1) 277px, 277px" alt="Michael’s tips" width="672" height="688" decoding="async"></a>
+            <a href="#michael"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-toc.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-toc-293x300.png 293w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-toc-400x410.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-toc-550x563.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-toc.png 672w" sizes="(max-width: 900px) 203px, (max-aspect-ratio: 1/1) 277px, 277px" alt="Michael’s tips" width="672" height="688" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 33.74%; --y: 4.15%; --w: 22.5%; --ar: 566 / 600; --img-w: 105.12%; --img-x: -0.71%; --img-y: -2.83%">
-            <a href="#brenda"><img src="senior-tips-brenda-toc.png" srcset="senior-tips-brenda-toc-269x300.png 269w, senior-tips-brenda-toc-400x446.png 400w, senior-tips-brenda-toc-550x614.png 550w" sizes="(max-width: 900px) 178px, (max-aspect-ratio: 1/1) 242px, 242px" alt="Brenda’s tips" width="595" height="664" decoding="async"></a>
+            <a href="#brenda"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-toc.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-toc-269x300.png 269w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-toc-400x446.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-toc-550x614.png 550w" sizes="(max-width: 900px) 178px, (max-aspect-ratio: 1/1) 242px, 242px" alt="Brenda’s tips" width="595" height="664" decoding="async"></a>
           </li>
           <li class="toc__person" style="--x: 21.36%; --y: 62.62%; --w: 20.42%; --ar: 512 / 530; --img-w: 167.38%; --img-x: -26.76%; --img-y: -24.53%">
-            <a href="#leonard"><img src="senior-tips-leo-toc.png" srcset="senior-tips-leo-toc-300x287.png 300w, senior-tips-leo-toc-400x383.png 400w, senior-tips-leo-toc-550x526.png 550w, senior-tips-leo-toc-768x735.png 768w" sizes="(max-width: 900px) 257px, (max-aspect-ratio: 1/1) 350px, 350px" alt="Leonard’s tips" width="857" height="820" decoding="async"></a>
+            <a href="#leonard"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leo-toc.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leo-toc-300x287.png 300w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leo-toc-400x383.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leo-toc-550x526.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leo-toc-768x735.png 768w" sizes="(max-width: 900px) 257px, (max-aspect-ratio: 1/1) 350px, 350px" alt="Leonard’s tips" width="857" height="820" decoding="async"></a>
           </li>
         </ul>
       </div>
@@ -1341,10 +1341,10 @@
       <div class="toc__group">
         <h3 class="toc__heading">Helpful resources</h3>
         <ul class="toc__resources" role="list">
-          <li><a href="#food"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="senior-tips-apple.png" srcset="senior-tips-apple-277x300.png 277w" sizes="(max-width: 900px) 53px, (max-aspect-ratio: 1/1) 74px, 74px" alt="" width="2146" height="2323" decoding="async"></span><span class="toc__label">Food</span></a></li>
-          <li><a href="#snap"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="senior-tips-snap.png" srcset="senior-tips-snap-283x300.png 283w" sizes="(max-width: 900px) 54px, (max-aspect-ratio: 1/1) 76px, 76px" alt="" width="1094" height="1158" decoding="async"></span><span class="toc__label">Assistance with SNAP</span></a></li>
-          <li><a href="#meals"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="senior-tips-delivery.png" srcset="senior-tips-delivery-267x300.png 267w" sizes="(max-width: 900px) 51px, (max-aspect-ratio: 1/1) 71px, 71px" alt="" width="1019" height="1147" decoding="async"></span><span class="toc__label">Home-delivered meals</span></a></li>
-          <li><a href="#transportation"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="senior-tips-transportation.png" srcset="senior-tips-transportation-300x158.png 300w, senior-tips-transportation-400x210.png 400w" sizes="(max-width: 900px) 109px, (max-aspect-ratio: 1/1) 152px, 152px" alt="" width="1766" height="929" decoding="async"></span><span class="toc__label">Transportation</span></a></li>
+          <li><a href="#food"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-apple.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-apple-277x300.png 277w" sizes="(max-width: 900px) 53px, (max-aspect-ratio: 1/1) 74px, 74px" alt="" width="2146" height="2323" decoding="async"></span><span class="toc__label">Food</span></a></li>
+          <li><a href="#snap"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-snap.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-snap-283x300.png 283w" sizes="(max-width: 900px) 54px, (max-aspect-ratio: 1/1) 76px, 76px" alt="" width="1094" height="1158" decoding="async"></span><span class="toc__label">Assistance with SNAP</span></a></li>
+          <li><a href="#meals"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-delivery.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-delivery-267x300.png 267w" sizes="(max-width: 900px) 51px, (max-aspect-ratio: 1/1) 71px, 71px" alt="" width="1019" height="1147" decoding="async"></span><span class="toc__label">Home-delivered meals</span></a></li>
+          <li><a href="#transportation"><span class="toc__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-transportation.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-transportation-300x158.png 300w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-transportation-400x210.png 400w" sizes="(max-width: 900px) 109px, (max-aspect-ratio: 1/1) 152px, 152px" alt="" width="1766" height="929" decoding="async"></span><span class="toc__label">Transportation</span></a></li>
         </ul>
       </div>
     </nav>
@@ -1354,15 +1354,15 @@
   <section id="mary" class="tips tips--mary" style="--n: 5" aria-labelledby="mary-title">
     <div class="tips__stage">
       <div class="tips__inner">
-        <div class="tips__header">
-          <h2 id="mary-title" class="tips__label"><span class="art-text">Mary’s tips</span><img class="tips__label-full" aria-hidden="true" src="senior-tips-mary-label.png" alt="" width="653" height="130" style="--lw: 653" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="senior-tips-mary-name.png" srcset="senior-tips-mary-name-400x124.png 400w, senior-tips-mary-name.png 421w" sizes="(max-width: 900px) 383px, 383px" alt="" width="421" height="130" style="--lw: 421" loading="lazy"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
+        <div class="tips__head">
+          <h2 id="mary-title" class="tips__label"><span class="art-text">Mary’s tips</span><img class="tips__label-full" aria-hidden="true" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-label.png" alt="" width="653" height="130" style="--lw: 653" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-name.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-name-400x124.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-name.png 421w" sizes="(max-width: 900px) 383px, 383px" alt="" width="421" height="130" style="--lw: 421" loading="lazy"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <p class="tips__count" aria-hidden="true">1/5</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="senior-tips-mary.png" srcset="senior-tips-mary-209x300.png 209w, senior-tips-mary-400x575.png 400w, senior-tips-mary-550x791.png 550w, senior-tips-mary-712x1024.png 712w, senior-tips-mary-780x1122.png 780w, senior-tips-mary-1068x1536.png 1068w, senior-tips-mary-1200x1726.png 1200w" sizes="(max-width: 900px) 206px, (max-aspect-ratio: 1/1) 571px, 571px" alt="Mary, talking on a cellphone." width="1406" height="2022" decoding="async" loading="lazy">
+        <img class="tips__cutout" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-209x300.png 209w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-400x575.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-550x791.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-712x1024.png 712w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-780x1122.png 780w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-1068x1536.png 1068w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mary-1200x1726.png 1200w" sizes="(max-width: 900px) 206px, (max-aspect-ratio: 1/1) 571px, 571px" alt="Mary, talking on a cellphone." width="1406" height="2022" decoding="async" loading="lazy">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1392,15 +1392,15 @@
   <section id="anna" class="tips tips--anna tips--left" style="--n: 2" aria-labelledby="anna-title">
     <div class="tips__stage">
       <div class="tips__inner">
-        <div class="tips__header">
-          <h2 id="anna-title" class="tips__label"><span class="art-text">Anna’s tips</span><img class="tips__label-full" aria-hidden="true" src="senior-tips-anna-label.png" alt="" width="614" height="118" style="--lw: 614" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="senior-tips-anna-name.png" alt="" width="381" height="118" style="--lw: 381" loading="lazy"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
+        <div class="tips__head">
+          <h2 id="anna-title" class="tips__label"><span class="art-text">Anna’s tips</span><img class="tips__label-full" aria-hidden="true" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-label.png" alt="" width="614" height="118" style="--lw: 614" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-name.png" alt="" width="381" height="118" style="--lw: 381" loading="lazy"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <p class="tips__count" aria-hidden="true">1/2</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="senior-tips-anna.png" srcset="senior-tips-anna-400x315.png 400w, senior-tips-anna-550x434.png 550w, senior-tips-anna-768x605.png 768w, senior-tips-anna-1024x807.png 1024w, senior-tips-anna-1200x946.png 1200w" sizes="(max-width: 900px) 377px, (max-aspect-ratio: 1/1) 574px, 574px" alt="Anna, seated at a table with a bottle of water." width="1999" height="1576" decoding="async" loading="lazy">
+        <img class="tips__cutout" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-400x315.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-550x434.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-768x605.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-1024x807.png 1024w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-anna-1200x946.png 1200w" sizes="(max-width: 900px) 377px, (max-aspect-ratio: 1/1) 574px, 574px" alt="Anna, seated at a table with a bottle of water." width="1999" height="1576" decoding="async" loading="lazy">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1419,15 +1419,15 @@
   <section id="mario" class="tips tips--mario tips--left" style="--n: 3" aria-labelledby="mario-title">
     <div class="tips__stage">
       <div class="tips__inner">
-        <div class="tips__header">
-          <h2 id="mario-title" class="tips__label"><span class="art-text">Mario’s tips</span><img class="tips__label-full" aria-hidden="true" src="senior-tips-mario-label.png" alt="" width="674" height="114" style="--lw: 674" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="senior-tips-mario-name.png" srcset="senior-tips-mario-name-400x106.png 400w, senior-tips-mario-name.png 431w" sizes="(max-width: 900px) 392px, 392px" alt="" width="431" height="114" style="--lw: 431" loading="lazy"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
+        <div class="tips__head">
+          <h2 id="mario-title" class="tips__label"><span class="art-text">Mario’s tips</span><img class="tips__label-full" aria-hidden="true" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-label.png" alt="" width="674" height="114" style="--lw: 674" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-name.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-name-400x106.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-name.png 431w" sizes="(max-width: 900px) 392px, 392px" alt="" width="431" height="114" style="--lw: 431" loading="lazy"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <p class="tips__count" aria-hidden="true">1/3</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="senior-tips-mario.png" srcset="senior-tips-mario-291x300.png 291w, senior-tips-mario-400x412.png 400w, senior-tips-mario-550x566.png 550w, senior-tips-mario-768x791.png 768w, senior-tips-mario-995x1024.png 995w, senior-tips-mario-1200x1236.png 1200w" sizes="(max-width: 900px) 288px, (max-aspect-ratio: 1/1) 574px, 574px" alt="Mario, seated in a patio chair, pointing to himself." width="1520" height="1565" decoding="async" loading="lazy">
+        <img class="tips__cutout" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-291x300.png 291w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-400x412.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-550x566.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-768x791.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-995x1024.png 995w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-mario-1200x1236.png 1200w" sizes="(max-width: 900px) 288px, (max-aspect-ratio: 1/1) 574px, 574px" alt="Mario, seated in a patio chair, pointing to himself." width="1520" height="1565" decoding="async" loading="lazy">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1449,15 +1449,15 @@
   <section id="patricia" class="tips tips--patricia" style="--n: 2" aria-labelledby="patricia-title">
     <div class="tips__stage">
       <div class="tips__inner">
-        <div class="tips__header">
-          <h2 id="patricia-title" class="tips__label"><span class="art-text">Patricia’s tips</span><img class="tips__label-full" aria-hidden="true" src="senior-tips-patricia-label.png" srcset="senior-tips-patricia-label-768x132.png 768w, senior-tips-patricia-label.png 793w" sizes="753px" alt="" width="793" height="136" style="--lw: 793" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="senior-tips-patricia-name.png" alt="" width="532" height="136" style="--lw: 532" loading="lazy"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
+        <div class="tips__head">
+          <h2 id="patricia-title" class="tips__label"><span class="art-text">Patricia’s tips</span><img class="tips__label-full" aria-hidden="true" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-label.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-label-768x132.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-label.png 793w" sizes="753px" alt="" width="793" height="136" style="--lw: 793" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-name.png" alt="" width="532" height="136" style="--lw: 532" loading="lazy"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <p class="tips__count" aria-hidden="true">1/2</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="senior-tips-patricia-cutout.png" srcset="senior-tips-patricia-cutout-300x286.png 300w, senior-tips-patricia-cutout-400x382.png 400w, senior-tips-patricia-cutout-550x525.png 550w, senior-tips-patricia-cutout-768x733.png 768w, senior-tips-patricia-cutout-1024x977.png 1024w, senior-tips-patricia-cutout-1200x1145.png 1200w" sizes="(max-width: 900px) 247px, (max-aspect-ratio: 1/1) 574px, 574px" alt="Patricia, smiling, holding a bag of groceries and a red tumbler." width="1350" height="1288" decoding="async" loading="lazy">
+        <img class="tips__cutout" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-cutout.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-cutout-300x286.png 300w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-cutout-400x382.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-cutout-550x525.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-cutout-768x733.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-cutout-1024x977.png 1024w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-patricia-cutout-1200x1145.png 1200w" sizes="(max-width: 900px) 247px, (max-aspect-ratio: 1/1) 574px, 574px" alt="Patricia, smiling, holding a bag of groceries and a red tumbler." width="1350" height="1288" decoding="async" loading="lazy">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1476,13 +1476,13 @@
   <section id="michael" class="tips tips--michael tips--left tips--single" style="--n: 1" aria-labelledby="michael-title">
     <div class="tips__stage">
       <div class="tips__inner">
-        <div class="tips__header">
-          <h2 id="michael-title" class="tips__label"><span class="art-text">Michael’s tips</span><img class="tips__label-full" aria-hidden="true" src="senior-tips-michael-label.png" srcset="senior-tips-michael-label-768x124.png 768w, senior-tips-michael-label.png 807w" sizes="767px" alt="" width="807" height="130" style="--lw: 807" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="senior-tips-michael-name.png" srcset="senior-tips-michael-name-550x127.png 550w, senior-tips-michael-name.png 563w" sizes="(max-width: 900px) 512px, 512px" alt="" width="563" height="130" style="--lw: 563" loading="lazy"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
+        <div class="tips__head">
+          <h2 id="michael-title" class="tips__label"><span class="art-text">Michael’s tips</span><img class="tips__label-full" aria-hidden="true" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-label.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-label-768x124.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-label.png 807w" sizes="767px" alt="" width="807" height="130" style="--lw: 807" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-name.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-name-550x127.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-name.png 563w" sizes="(max-width: 900px) 512px, 512px" alt="" width="563" height="130" style="--lw: 563" loading="lazy"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
           <div class="tips__nav">
             <p class="tips__count" aria-hidden="true">1/1</p>
           </div>
         </div>
-        <img class="tips__cutout" src="senior-tips-michael-cutout.png" srcset="senior-tips-michael-cutout-400x494.png 400w, senior-tips-michael-cutout-550x679.png 550w, senior-tips-michael-cutout-768x948.png 768w, senior-tips-michael-cutout-829x1024.png 829w, senior-tips-michael-cutout-1200x1482.png 1200w" sizes="(max-width: 900px) 282px, (max-aspect-ratio: 1/1) 571px, 571px" alt="Michael, seated outdoors in a red polo shirt." width="1530" height="1889" decoding="async" loading="lazy">
+        <img class="tips__cutout" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-cutout.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-cutout-400x494.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-cutout-550x679.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-cutout-768x948.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-cutout-829x1024.png 829w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-michael-cutout-1200x1482.png 1200w" sizes="(max-width: 900px) 282px, (max-aspect-ratio: 1/1) 571px, 571px" alt="Michael, seated outdoors in a red polo shirt." width="1530" height="1889" decoding="async" loading="lazy">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1498,13 +1498,13 @@
   <section id="brenda" class="tips tips--brenda tips--single" style="--n: 1" aria-labelledby="brenda-title">
     <div class="tips__stage">
       <div class="tips__inner">
-        <div class="tips__header">
-          <h2 id="brenda-title" class="tips__label"><span class="art-text">Brenda’s tips</span><img class="tips__label-full" aria-hidden="true" src="senior-tips-brenda-label.png" alt="" width="764" height="130" style="--lw: 764" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="senior-tips-brenda-name.png" alt="" width="509" height="130" style="--lw: 509" loading="lazy"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
+        <div class="tips__head">
+          <h2 id="brenda-title" class="tips__label"><span class="art-text">Brenda’s tips</span><img class="tips__label-full" aria-hidden="true" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-label.png" alt="" width="764" height="130" style="--lw: 764" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-name.png" alt="" width="509" height="130" style="--lw: 509" loading="lazy"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
           <div class="tips__nav">
             <p class="tips__count" aria-hidden="true">1/1</p>
           </div>
         </div>
-        <img class="tips__cutout" src="senior-tips-brenda-cutout.png" srcset="senior-tips-brenda-cutout-400x415.png 400w, senior-tips-brenda-cutout-550x571.png 550w, senior-tips-brenda-cutout-768x797.png 768w, senior-tips-brenda-cutout-986x1024.png 986w, senior-tips-brenda-cutout-1200x1246.png 1200w" sizes="(max-width: 900px) 335px, (max-aspect-ratio: 1/1) 572px, 572px" alt="Brenda, smiling, seated at a table." width="1622" height="1684" decoding="async" loading="lazy">
+        <img class="tips__cutout" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-cutout.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-cutout-400x415.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-cutout-550x571.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-cutout-768x797.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-cutout-986x1024.png 986w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-brenda-cutout-1200x1246.png 1200w" sizes="(max-width: 900px) 335px, (max-aspect-ratio: 1/1) 572px, 572px" alt="Brenda, smiling, seated at a table." width="1622" height="1684" decoding="async" loading="lazy">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1520,15 +1520,15 @@
   <section id="leonard" class="tips tips--leonard tips--left" style="--n: 3" aria-labelledby="leonard-title">
     <div class="tips__stage">
       <div class="tips__inner">
-        <div class="tips__header">
-          <h2 id="leonard-title" class="tips__label"><span class="art-text">Leonard’s tips</span><img class="tips__label-full" aria-hidden="true" src="senior-tips-leonard-label.png" srcset="senior-tips-leonard-label-768x147.png 768w, senior-tips-leonard-label.png 777w" sizes="738px" alt="" width="777" height="149" style="--lw: 777" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="senior-tips-leonard-name.png" alt="" width="524" height="149" style="--lw: 524" loading="lazy"><img src="senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
+        <div class="tips__head">
+          <h2 id="leonard-title" class="tips__label"><span class="art-text">Leonard’s tips</span><img class="tips__label-full" aria-hidden="true" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-label.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-label-768x147.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-label.png 777w" sizes="738px" alt="" width="777" height="149" style="--lw: 777" loading="lazy"><span class="tips__label-split" aria-hidden="true"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-name.png" alt="" width="524" height="149" style="--lw: 524" loading="lazy"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-tips.png" alt="" width="211" height="83" style="--lw: 211" loading="lazy"></span></h2>
           <div class="tips__nav">
             <button class="tips__arrow" type="button" data-dir="-1" aria-label="Previous tip" disabled><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <p class="tips__count" aria-hidden="true">1/3</p>
             <button class="tips__arrow" type="button" data-dir="1" aria-label="Next tip"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
-        <img class="tips__cutout" src="senior-tips-leonard-cutout.png" srcset="senior-tips-leonard-cutout-400x326.png 400w, senior-tips-leonard-cutout-550x448.png 550w, senior-tips-leonard-cutout-768x626.png 768w, senior-tips-leonard-cutout-1024x834.png 1024w, senior-tips-leonard-cutout-1200x978.png 1200w, senior-tips-leonard-cutout-1536x1251.png 1536w" sizes="(max-width: 900px) 339px, (max-aspect-ratio: 1/1) 700px, 700px" alt="Leonard, standing beside a raised garden bed of tomato plants." width="2380" height="1939" decoding="async" loading="lazy">
+        <img class="tips__cutout" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-cutout.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-cutout-400x326.png 400w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-cutout-550x448.png 550w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-cutout-768x626.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-cutout-1024x834.png 1024w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-cutout-1200x978.png 1200w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-leonard-cutout-1536x1251.png 1536w" sizes="(max-width: 900px) 339px, (max-aspect-ratio: 1/1) 700px, 700px" alt="Leonard, standing beside a raised garden bed of tomato plants." width="2380" height="1939" decoding="async" loading="lazy">
         <div class="bubble">
           <ol class="bubble__tips" role="list">
           <li class="bubble__tip is-active">
@@ -1551,7 +1551,7 @@
     <div class="copy__inner">
       <h2>Looking for resources? Check these out:</h2>
 
-      <h3 id="food" class="copy__group"><img src="senior-tips-apple.png" srcset="senior-tips-apple-277x300.png 277w" sizes="(max-width: 900px) 53px, (max-aspect-ratio: 1/1) 74px, 74px" alt="" width="2146" height="2323" loading="lazy" decoding="async"><span>Food</span></h3>
+      <h3 id="food" class="copy__group"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-apple.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-apple-277x300.png 277w" sizes="(max-width: 900px) 53px, (max-aspect-ratio: 1/1) 74px, 74px" alt="" width="2146" height="2323" loading="lazy" decoding="async"><span>Food</span></h3>
 
       <h4>Greater Cleveland Food Bank</h4>
       <p>Looking for a food giveaway near you? Call <a href="tel:+12167382067">(216) 738-2067</a> or <a href="tel:+18557382067">(855) 738-2067</a>. The Greater Cleveland Food Bank can share free food options near you, including food giveaways and hot meal programs.</p>
@@ -1560,7 +1560,7 @@
       <h4>211</h4>
       <p>Call <a href="tel:211">211</a> to get a list of food giveaways, hot meal programs and SNAP assistance near you.</p>
 
-      <h3 id="snap" class="copy__group copy__group--flip"><img src="senior-tips-snap.png" srcset="senior-tips-snap-283x300.png 283w" sizes="(max-width: 900px) 54px, (max-aspect-ratio: 1/1) 76px, 76px" alt="" width="1094" height="1158" loading="lazy" decoding="async"><span>Assistance with SNAP</span></h3>
+      <h3 id="snap" class="copy__group copy__group--flip"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-snap.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-snap-283x300.png 283w" sizes="(max-width: 900px) 54px, (max-aspect-ratio: 1/1) 76px, 76px" alt="" width="1094" height="1158" loading="lazy" decoding="async"><span>Assistance with SNAP</span></h3>
 
       <h4>Cuyahoga County Job and Family Services</h4>
       <p>Residents can apply for SNAP online or on the phone at <a href="tel:+18446406446">(844) 640-6446</a>. Avoid calling on Mondays and at lunch hours to reduce wait times. Residents can also pick up applications on-site and drop them off in-person at the following locations:</p>
@@ -1576,7 +1576,7 @@
       <h4>Cleveland libraries</h4>
       <p>Library staff at Cleveland public libraries can help residents apply for SNAP by faxing documents to the county’s Job and Family Services department and assisting with technology questions. Read more about what librarians can and can’t do <a href="https://signalcleveland.org/how-cleveland-area-libraries-are-helping-residents-with-snap-medicaid/">here</a>.</p>
 
-      <h3 id="meals" class="copy__group"><img src="senior-tips-delivery.png" srcset="senior-tips-delivery-267x300.png 267w" sizes="(max-width: 900px) 51px, (max-aspect-ratio: 1/1) 71px, 71px" alt="" width="1019" height="1147" loading="lazy" decoding="async"><span>Home-delivered meals</span></h3>
+      <h3 id="meals" class="copy__group"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-delivery.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-delivery-267x300.png 267w" sizes="(max-width: 900px) 51px, (max-aspect-ratio: 1/1) 71px, 71px" alt="" width="1019" height="1147" loading="lazy" decoding="async"><span>Home-delivered meals</span></h3>
 
       <h4>Western Reserve Area Agency on Aging</h4>
       <p>The agency distributes federal funding to local providers across Cuyahoga and other nearby counties that deliver meals to people who are 60 and over. The meals are free, though donations are optional. Seniors with the greatest economic, social and physical needs are prioritized, but there are no income limits on who can receive these meals.</p>
@@ -1588,7 +1588,7 @@
       <h4>Cuyahoga County’s program for seniors not on Medicaid</h4>
       <p>The Cuyahoga County Options for Independent Living program offers home-delivered meals to residents who are over 60 with limited income and who do not qualify for Medicaid. The program can offer 20 meals each month for $5 a month. Call <a href="tel:+12164206700">(216) 420-6700</a> if interested. There is currently a waitlist for the program.</p>
 
-      <h3 id="transportation" class="copy__group copy__group--flip"><img src="senior-tips-transportation.png" srcset="senior-tips-transportation-300x158.png 300w, senior-tips-transportation-400x210.png 400w" sizes="(max-width: 900px) 109px, (max-aspect-ratio: 1/1) 152px, 152px" alt="" width="1766" height="929" loading="lazy" decoding="async"><span>Transportation</span></h3>
+      <h3 id="transportation" class="copy__group copy__group--flip"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-transportation.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-transportation-300x158.png 300w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-transportation-400x210.png 400w" sizes="(max-width: 900px) 109px, (max-aspect-ratio: 1/1) 152px, 152px" alt="" width="1766" height="929" loading="lazy" decoding="async"><span>Transportation</span></h3>
 
       <h4>Senior Transportation Connection</h4>
       <p>The nonprofit offers two rides a week (one round trip) for Cleveland seniors 60 and older who have limited transportation. Rides in the city of Cleveland are free and $1.25 each way for rides outside the city limits. Rides outside of Cleveland are for medical purposes only. A 10-mile limit exists for all trips.</p>
