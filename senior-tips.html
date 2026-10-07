@@ -61,14 +61,6 @@
     /* Side margin on phones. Capped in px so that enlarging the font size
        doesn't widen the margins and squeeze the story. */
     --gutter: min(1.5rem, 24px);
-
-    /* Heading.svg is 392.88 x 373.5 with the lettering filling the canvas.
-       Its height is the smaller of a screen-height share (desktop) and a
-       width-based size (phones), but never below a rem-based floor, so it
-       stays readable (and the hero grows instead) when zoomed far in. */
-    --heading-h: max(min(57vh, 86vw * .9507), min(15rem, 86vw * .9507));   /* fallback */
-    --heading-h: max(min(57svh, 86vw * .9507), min(15rem, 86vw * .9507));
-    --heading-w: calc(var(--heading-h) * 1.0519);
   }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -147,27 +139,41 @@
   }
 
   /* Headline art: cut-out lettering over the hero photo. */
+  /* The headline, as real text in the heading font. */
   .hero__title {
     position: relative;
     z-index: 2;
     flex: none;
+    max-width: 14ch;
     margin: auto 0 0;   /* with the byline's auto margin: centers heading + subhead */
-    line-height: 0;
+    text-align: center;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(2.75rem, 1.5rem + 5.5vw, 6.5rem);
+    line-height: 1.02;
+    letter-spacing: -.01em;
+    color: var(--paper);
+    text-wrap: balance;
+    text-shadow: 0 2px 4px rgba(0,0,0,.6), 0 0 24px rgba(0,0,0,.7);
   }
 
-  .heading {
-    display: block;
-    width: var(--heading-w);
-    height: auto;
-    pointer-events: none;
-    user-select: none;
+  /* Phones: much bigger, roughly a word per line, filling the width. */
+  @media (max-width: 900px), (max-aspect-ratio: 1/1) {
+    .hero__title {
+      max-width: 9ch;
+      font-size: min(17vw, 9rem);
+      line-height: .98;
+    }
   }
 
   .subhead {
     position: relative;
     z-index: 2;
     max-width: 100%;
-    margin: 1.25rem 0 0;
+    /* Auto margin above, matching the byline's: the subhead sits exactly
+       halfway between the headline and the byline. */
+    margin: auto 0 0;
+    padding-top: 1.25rem;   /* minimum gap under the headline */
     text-align: center;
     font-family: var(--font-heading);
     font-weight: 700;
@@ -248,14 +254,7 @@
     background: linear-gradient(var(--paper), rgba(255,255,255,0));
   }
 
-  /* Phones: the subhead sits halfway between the lettering and the byline
-     (equal auto margins above and below it). */
-  @media (max-width: 900px), (max-aspect-ratio: 1/1) {
-    .subhead { margin-top: auto; padding-top: 1.25rem; }
-  }
-
-  /* ---- Copy screens (2: Intro, 4: Is SNAP shrinking?, 6: Esquivel,
-     12: Resources) ----
+  /* ---- Copy screens (the intro, beside the contents, and the resources) ----
      Plain text screens in normal flow, centered, no background. */
   .copy {
     display: grid;
@@ -287,16 +286,13 @@
 
   .copy p + p { margin-top: 1.1em; }
 
-  /* The short answer gets a yellow marker highlight (brand accent). */
-  .copy .copy__answer {
-    margin-top: 1.6em;
+  /* The printable-PDF link above the intro: a touch smaller than the copy. */
+  .copy .copy__print {
+    font-size: 1.1rem;
     font-weight: 600;
   }
 
-  .copy mark {
-    background: linear-gradient(transparent 55%, var(--yellow) 55%);
-    color: inherit;
-  }
+  .copy .copy__print + p { margin-top: .9em; }
 
   /* Resource lists: a group label, then bullets. Phone numbers are links. */
   .copy h3 {
@@ -381,19 +377,9 @@
   .copy a:hover,
   .copy a:focus-visible { text-decoration-thickness: 2px; }
 
-  /* Copy beside an image: the copy takes the larger share, so it runs a little
-     past the center line, and the image sits a short way to its right. */
-  .copy--split {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    column-gap: 2vw;
-  }
-
-  .copy--split .copy__inner { justify-self: end; }   /* text hugs the gap */
-
-  /* Tighter spacing (screen 4 onward): the screen is only as tall as its
-     content, not a full screen, so there's less empty space between screens.
-     Right after a tips scene the top padding goes, since that scene already
-     ends with its own empty margin. */
+  /* Tighter spacing (the resources): the screen is only as tall as its
+     content, not a full screen. Right after a tips screen the top padding
+     goes, since that screen already ends with its own empty margin. */
   .copy--tight {
     min-height: 0;
     padding-top: 8vh;
@@ -401,13 +387,6 @@
   }
 
   .tips + .copy--tight { padding-top: 0; }
-
-  .copy--split .copy__art {
-    justify-self: start;
-    margin-left: 2.5vw;   /* distance from the copy; smaller = tighter */
-    width: min(100%, 29.75rem);   /* 75% larger than the original 17rem */
-    height: auto;
-  }
 
   @media (max-width: 900px), (max-aspect-ratio: 1/1) {
     .copy { padding: 3rem var(--gutter) 5rem; grid-template-columns: minmax(0, 1fr); }
@@ -417,21 +396,6 @@
     /* Fill the column exactly, so large text wraps inside it. */
     .copy__inner { justify-self: stretch; }
     .tips + .copy--tight { padding-top: 0; }
-
-    .copy--split { grid-template-columns: 1fr; }
-
-    /* The image sits between the first and second paragraphs: the copy
-       wrapper steps aside so its paragraphs share the grid with the image,
-       and order pulls the image up after the first one. */
-    .copy--split .copy__inner { display: contents; }
-    .copy--split .copy__inner > * { justify-self: start; max-width: 36rem; }
-    .copy--split .copy__inner > :first-child { order: -1; }
-    .copy--split .copy__art {
-      order: -1;
-      justify-self: center;
-      margin: .75rem 0 0;
-      width: min(100%, 19.25rem);   /* 75% larger than the original 11rem */
-    }
   }
 
   /* ---- Screen 2 + table of contents ----
@@ -640,8 +604,8 @@
     .toc__icon img { transition: none; }
   }
 
-  /* ---- Tips screens: Mary (3), Anna (5), Mario (7), Patricia (8),
-     Michael (9), Brenda (10), Leonard (11) ----
+  /* ---- Tips screens: Mary (3), Anna (4), Mario (5), Patricia (6),
+     Michael (7), Brenda (8), Leonard (9) ----
      Label art (an image, with its words as alt text), a cutout, and a speech
      bubble whose tips are real HTML text, so they grow with browser zoom and
      larger default font sizes.
@@ -978,8 +942,8 @@
      (the image has empty space on its right). */
   .tips--leonard .tips__cutout {
     max-width: 122%;
-    max-height: 74vh;
-    max-height: 74svh;
+    max-height: 58vh;   /* tall enough to read big, short enough that his screen still pins on a 720px laptop */
+    max-height: 58svh;
     margin-right: -7%;
   }
 
@@ -1165,10 +1129,7 @@
      Note the (max-aspect-ratio: 1/1) media queries resolve against the
      iframe, which here is as tall as the whole story, so this mode always
      gets the phone layout (single column, contents first), on desktop too. */
-  html.st-px {
-    --vp: 800px;
-    --heading-h: max(min(var(--vp) * .57, 86vw * .9507), min(15rem, 86vw * .9507));
-  }
+  html.st-px { --vp: 800px; }
 
   html.st-px .hero { min-height: 0; padding: 40px 1rem 48px; }
   html.st-px .hero .hero__title { margin-top: 0; }
@@ -1186,49 +1147,69 @@
 
   /* ---------- Back to top ---------- */
 
-  /* Desktop only for now; phones and portrait tablets don't get it. Nor
-     does the embedded reduced-motion layout, where the frame is as tall as
-     the story and a fixed button would sit at its very bottom. */
-  .back-to-top { display: none; }
+  /* A pill in the bottom-right corner. Desktop shows it once the hero has
+     scrolled away; phones and portrait tablets once the table of contents
+     has (see the script), and there it's a compact round button so it
+     doesn't cover the story. Not in the embedded reduced-motion layout,
+     where the frame is as tall as the story and a fixed button would sit
+     at its very bottom. */
+  .back-to-top {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    gap: .4em;
+    padding: .6em 1em;
+    border: 2px solid var(--slate);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--slate);
+    font: 600 .95rem/1 var(--font-body);
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(.5rem);
+    transition: opacity .2s, transform .2s, visibility 0s .2s, background-color .15s, color .15s;
+  }
 
-  @media (min-width: 901px) and (min-aspect-ratio: 1/1) {
+  .back-to-top.is-shown {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity .2s, transform .2s, background-color .15s, color .15s;
+  }
+
+  .back-to-top:hover { background: var(--slate); color: var(--paper); }
+
+  .back-to-top:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 3px;
+  }
+
+  html.st-px .back-to-top { display: none; }
+
+  @media (max-width: 900px), (max-aspect-ratio: 1/1) {
     .back-to-top {
-      position: fixed;
-      right: 1.5rem;
-      bottom: 1.5rem;
-      z-index: 10;
-      display: inline-flex;
-      align-items: center;
-      gap: .4em;
-      padding: .6em 1em;
-      border: 2px solid var(--slate);
-      border-radius: 999px;
-      background: var(--paper);
-      color: var(--slate);
-      font: 600 .95rem/1 var(--font-body);
-      text-decoration: none;
-      box-shadow: 0 4px 14px rgba(0,0,0,.15);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(.5rem);
-      transition: opacity .2s, transform .2s, visibility 0s .2s, background-color .15s, color .15s;
+      right: var(--gutter);
+      bottom: max(var(--gutter), env(safe-area-inset-bottom));
+      width: 3rem;
+      height: 3rem;
+      padding: 0;
+      justify-content: center;
     }
 
-    .back-to-top.is-shown {
-      opacity: 1;
-      visibility: visible;
-      transform: none;
-      transition: opacity .2s, transform .2s, background-color .15s, color .15s;
+    /* The words stay for screen readers; the arrow alone shows. */
+    .back-to-top span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
-
-    .back-to-top:hover { background: var(--slate); color: var(--paper); }
-
-    .back-to-top:focus-visible {
-      outline: 3px solid var(--teal);
-      outline-offset: 3px;
-    }
-
-    html.st-px .back-to-top { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1240,7 +1221,6 @@
   /* The reader has picked their own colors, which images can't take on, so
      the cut-paper headline and labels give way to their words as real text. */
   @media (forced-colors: active) {
-    .hero__title img,
     .tips__label img { display: none; }
 
     .art-text {
@@ -1257,7 +1237,6 @@
       line-height: 1.1;
     }
 
-    .hero__title .art-text { display: block; max-width: 20ch; font-size: clamp(2.5rem, 8vw, 5rem); text-align: center; }
     .tips__label .art-text { display: block; font-size: clamp(2rem, 5vw, 3rem); }
   }
 </style>
@@ -1274,11 +1253,7 @@
     <!-- The headline is cut-paper art; the words sit beside it as real text
          (hidden until forced colors), so screen readers, find-in-page and
          translation all get the headline. -->
-    <h1 id="story-title" class="hero__title">
-      <img class="heading" src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading-768x730.png 768w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading-1024x973.png 1024w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading-1200x1140.png 1200w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading-1536x1460.png 1536w, https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-heading.png 1572w" sizes="(max-width: 900px) 614px, (max-aspect-ratio: 1/1) 863px, 863px" alt=""
-           width="1572" height="1494" fetchpriority="high" decoding="async">
-      <span class="art-text">How Cleveland seniors are staying fed</span>
-    </h1>
+    <h1 id="story-title" class="hero__title">How Cleveland seniors are staying fed</h1>
 
     <p class="subhead">Tips and resources by seniors, for seniors</p>
 
@@ -1299,6 +1274,7 @@
   <div class="intro">
     <section class="copy intro__copy">
       <div class="copy__inner">
+        <p class="copy__print"><a href="https://signalcleveland.org/wp-content/uploads/2026/10/Senior-tips-printable.pdf">Printable version (PDF)</a></p>
         <p>For Cleveland seniors, high grocery prices are only part of the struggle to eat well. Many live on fixed incomes that don’t stretch as far as they once did. Others have trouble getting to the store or cooking as they lose mobility.</p>
         <p>Over the past three months, I spoke with more than a dozen seniors about these challenges. Many were frustrated with SNAP. Some ages 55 to 64 are losing benefits because of new work requirements. Others receive only a small monthly benefit, especially since pandemic-era increases have ended. <a href="#">Read more here.</a></p>
         <p>But I also heard plenty of hard-earned wisdom. Seniors shared their tips for shopping, cooking and eating well — or simply eating enough — as food costs rise and getting around becomes harder.</p>
@@ -1388,7 +1364,7 @@
 
 
 
-  <!-- Screen 5 -->
+  <!-- Screen 4 -->
   <section id="anna" class="tips tips--anna tips--left" style="--n: 2" aria-labelledby="anna-title">
     <div class="tips__stage">
       <div class="tips__inner">
@@ -1415,7 +1391,7 @@
     </div>
   </section>
 
-  <!-- Screen 7 -->
+  <!-- Screen 5 -->
   <section id="mario" class="tips tips--mario tips--left" style="--n: 3" aria-labelledby="mario-title">
     <div class="tips__stage">
       <div class="tips__inner">
@@ -1445,7 +1421,7 @@
     </div>
   </section>
 
-  <!-- Screen 8 -->
+  <!-- Screen 6 -->
   <section id="patricia" class="tips tips--patricia" style="--n: 2" aria-labelledby="patricia-title">
     <div class="tips__stage">
       <div class="tips__inner">
@@ -1472,7 +1448,7 @@
     </div>
   </section>
 
-  <!-- Screen 9 -->
+  <!-- Screen 7 -->
   <section id="michael" class="tips tips--michael tips--left tips--single" style="--n: 1" aria-labelledby="michael-title">
     <div class="tips__stage">
       <div class="tips__inner">
@@ -1494,7 +1470,7 @@
     </div>
   </section>
 
-  <!-- Screen 10 -->
+  <!-- Screen 8 -->
   <section id="brenda" class="tips tips--brenda tips--single" style="--n: 1" aria-labelledby="brenda-title">
     <div class="tips__stage">
       <div class="tips__inner">
@@ -1516,7 +1492,7 @@
     </div>
   </section>
 
-  <!-- Screen 11 -->
+  <!-- Screen 9 -->
   <section id="leonard" class="tips tips--leonard tips--left" style="--n: 3" aria-labelledby="leonard-title">
     <div class="tips__stage">
       <div class="tips__inner">
@@ -1546,7 +1522,7 @@
     </div>
   </section>
 
-  <!-- Screen 12 -->
+  <!-- Screen 10 -->
   <section class="copy copy--tight copy--resources">
     <div class="copy__inner">
       <h2>Looking for resources? Check these out:</h2>
@@ -1559,6 +1535,9 @@
 
       <h4>211</h4>
       <p>Call <a href="tel:211">211</a> to get a list of food giveaways, hot meal programs and SNAP assistance near you.</p>
+
+      <h4>Health insurance</h4>
+      <p>Some Medicare Advantage health insurance plans offer benefits to help pay for groceries and produce. Read more about how and whether you can access this grocery assistance <a href="https://signalcleveland.org/how-ohio-seniors-can-get-their-medicare-to-pay-for-groceries/">here</a>.</p>
 
       <h3 id="snap" class="copy__group copy__group--flip"><img src="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-snap.png" srcset="https://signalcleveland.org/wp-content/uploads/2026/09/senior-tips-snap-283x300.png 283w" sizes="(max-width: 900px) 54px, (max-aspect-ratio: 1/1) 76px, 76px" alt="" width="1094" height="1158" loading="lazy" decoding="async"><span>Assistance with SNAP</span></h3>
 
@@ -1795,14 +1774,35 @@
 </script>
 
 <script>
-/* Back to top: shown once the hero is out of view. */
+/* Back to top: shown once the reader is past the opening. On desktop that's
+   the hero scrolling away; on phones and portrait tablets, where the table
+   of contents comes after the intro, it's once the contents have scrolled
+   up off the screen. */
 (function () {
   var button = document.querySelector(".back-to-top");
   var hero = document.getElementById("top");
-  if (!button || !hero || !("IntersectionObserver" in window)) return;
+  var toc = document.querySelector(".toc");
+  if (!button || !hero || !toc || !("IntersectionObserver" in window)) return;
+  var narrow = window.matchMedia("(max-width: 900px), (max-aspect-ratio: 1/1)");
+  var past = { hero: false, toc: false };
+  function show() {
+    button.classList.toggle("is-shown", narrow.matches ? past.toc : past.hero);
+  }
   new IntersectionObserver(function (entries) {
-    button.classList.toggle("is-shown", !entries[0].isIntersecting);
+    entries.forEach(function (e) {
+      // Past it = out of view AND above the screen, not still below it.
+      var key = e.target === hero ? "hero" : "toc";
+      past[key] = !e.isIntersecting && e.boundingClientRect.top < 0;
+    });
+    show();
   }).observe(hero);
+  // A separate observer so one callback can't mix the two up.
+  new IntersectionObserver(function (entries) {
+    var e = entries[entries.length - 1];
+    past.toc = !e.isIntersecting && e.boundingClientRect.top < 0;
+    show();
+  }).observe(toc);
+  if (narrow.addEventListener) narrow.addEventListener("change", show);
 })();
 </script>
 
