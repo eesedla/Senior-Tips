@@ -57,6 +57,10 @@ function clean(node) {
   // frame; this copy's links stay reachable for screen readers by reading,
   // just not in the visible tab order, where focus would land on nothing.
   if (tag === "a") out += ' tabindex="-1"';
+  // Links that leave the page open in a new tab, as they do in the story.
+  if (tag === "a" && /^https?:/i.test(node.getAttribute("href") || "")) {
+    out += ' target="_blank" rel="noopener"';
+  }
   if (tag === "img") return out + ' loading="lazy">';
   return out + ">" + inner + "</" + tag + ">";
 }
@@ -71,6 +75,10 @@ const parts = [];
 parts.push(`<p><strong>${escape(doc.querySelector(".hero .subhead").textContent.trim())}</strong></p>`);
 doc.querySelectorAll(".intro__copy .copy__inner > p").forEach((p) => parts.push(clean(p)));
 
+// The printable PDF link, which sits at the end of the contents in the story.
+const print = doc.querySelector(".toc__print");
+if (print) parts.push(clean(print));
+
 // Each person's tips: their name as a heading, the portrait, the tips.
 doc.querySelectorAll("section.tips").forEach((section) => {
   const name = section.querySelector(".tips__label .art-text").textContent.trim();
@@ -83,7 +91,7 @@ doc.querySelectorAll("section.tips").forEach((section) => {
 // The resources section, as is. The pictures beside its group headings are
 // decoration (their alt is empty), so only the words come along.
 doc.querySelectorAll(".copy--resources .copy__inner > *").forEach((el) => {
-  if (/^H3$/.test(el.tagName)) {
+  if (el.tagName === "H3" && el.querySelector("img")) {
     const id = el.id ? ` id="st-text-${el.id}"` : "";
     parts.push(`<h3${id}>${escape(el.textContent.trim())}</h3>`);
   } else {
